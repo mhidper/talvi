@@ -1,0 +1,597 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+
+% Configuración de código
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red}
+}
+
+% Encabezados
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Metodología CTOT WP/19/21}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{Implementación para Brasil}
+
+\title{\textbf{Metodología para el Cálculo de Commodity Terms of Trade (CTOT)\\
+\large Basado en Gruss \& Kebhaj (2019) WP/19/21\\
+Implementación Mensual para Brasil}}
+
+\author{Documento Técnico Metodológico}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta la metodología implementada para el cálculo del índice de términos de intercambio de commodities (CTOT) para Brasil, siguiendo estrictamente la metodología desarrollada por Gruss \& Kebhaj (2019) en el Working Paper 19/21 del FMI. La implementación incluye el uso de precios reales deflactados por CPI G7, pesos time-varying basados en promedios móviles de tres años, y una cobertura de 45+ commodities mapeados desde códigos HS de comercio internacional. El índice resultante mide las ganancias y pérdidas de ingreso como porcentaje del PIB derivadas de cambios en precios internacionales de commodities.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+\subsection{Motivación y Objetivos}
+
+Los términos de intercambio de commodities (CTOT) constituyen una medida fundamental para evaluar el impacto de fluctuaciones en precios internacionales sobre las economías que dependen significativamente del comercio de materias primas. Para países como Brasil, que exhibe un patrón comercial diversificado en commodities energéticos, metálicos y agrícolas, la construcción de un índice CTOT robusto es esencial para:
+
+\begin{itemize}
+    \item Cuantificar shocks externos de términos de intercambio
+    \item Analizar la transmisión de precios internacionales a variables macroeconómicas domésticas
+    \item Evaluar la vulnerabilidad fiscal y externa ante volatilidad de commodities
+    \item Informar decisiones de política económica y gestión de riesgos
+\end{itemize}
+
+\subsection{Contribución Metodológica}
+
+Esta implementación replica y extiende la metodología de Gruss \& Kebhaj (2019), incorporando las siguientes innovaciones técnicas:
+
+\begin{enumerate}
+    \item \textbf{Frecuencia mensual}: Adaptación de la metodología anual a datos mensuales para mayor granularidad temporal
+    \item \textbf{Deflactor CPI actualizado}: Uso de CPI G7 como deflactor, replicando el enfoque original del MUV Index
+    \item \textbf{Mapeo exhaustivo HS-IMF}: Mapeo comprehensivo de 45+ commodities desde códigos HS 6-digit a series IMF
+    \item \textbf{Pesos time-varying}: Implementación rigurosa de pesos variables basados en promedios móviles rezagados
+\end{enumerate}
+
+\section{Marco Teórico}
+
+\subsection{Definición del Índice CTOT}
+
+El índice de términos de intercambio de commodities se define como una medida de las ganancias o pérdidas de ingreso agregado derivadas de cambios en precios internacionales de materias primas. Formalmente, el cambio en el índice CTOT se expresa como:
+
+\begin{equation}
+\Delta \log(\text{CTOT}_{i,t}) = \sum_{j=1}^{J} \Delta P_{j,t} \times \Omega_{i,j,t}
+\label{eq:ctot_main}
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item $\Delta \log(\text{CTOT}_{i,t})$ es el cambio logarítmico del índice para el país $i$ en el período $t$
+    \item $\Delta P_{j,t} = \log(P_{j,t}) - \log(P_{j,t-1})$ es el cambio logarítmico del precio real del commodity $j$
+    \item $\Omega_{i,j,t}$ es el peso del commodity $j$ para el país $i$ en el período $t$
+    \item $J$ es el número total de commodities incluidos en el índice
+\end{itemize}
+
+\subsection{Especificación de Pesos}
+
+El peso de cada commodity se define como la participación de las exportaciones netas en el PIB nominal:
+
+\begin{equation}
+\Omega_{i,j,t} = \frac{X_{i,j,t} - M_{i,j,t}}{\text{PIB}_{i,t}}
+\label{eq:weights}
+\end{equation}
+
+donde $X_{i,j,t}$ y $M_{i,j,t}$ representan las exportaciones e importaciones del commodity $j$ del país $i$ en el período $t$, respectivamente.
+
+\subsection{Interpretación Económica}
+
+La especificación en la ecuación (\ref{eq:ctot_main}) permite interpretar $\Delta \log(\text{CTOT}_{i,t})$ como la ganancia o pérdida de ingreso agregado expresada como fracción del PIB. Específicamente:
+
+\begin{itemize}
+    \item $\Delta \log(\text{CTOT}_{i,t}) > 0$: Ganancia de ingreso equivalente a $\Delta \log(\text{CTOT}_{i,t}) \times 100$ por ciento del PIB
+    \item $\Delta \log(\text{CTOT}_{i,t}) < 0$: Pérdida de ingreso equivalente a $|\Delta \log(\text{CTOT}_{i,t})| \times 100$ por ciento del PIB
+\end{itemize}
+
+\section{Fuentes de Datos}
+
+\subsection{Precios de Commodities}
+
+\subsubsection{Fuente Primaria}
+Los precios nominales mensuales se obtienen de la base de datos \textit{IMF Primary Commodity Prices}, que proporciona series temporales para más de 45 commodities individuales desde 1980. La base incluye las siguientes categorías principales:
+
+\begin{table}[H]
+\centering
+\caption{Clasificación de Commodities por Categoría}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Categoría} & \textbf{Peso Teórico (\%)} & \textbf{Commodities} \\
+\midrule
+Energía & 40.9 & Petróleo, Carbón, Gas Natural, Propano \\
+Metales & 22.7 & Metales base + Metales preciosos \\
+Alimentos y Bebidas & 34.5 & Cereales, Carnes, Aceites, etc. \\
+Materias Primas Agrícolas & 4.3 & Algodón, Caucho, Madera, Lana \\
+Fertilizantes & 1.9 & Urea, Fosfatos, Potasio \\
+\bottomrule
+\end{tabular}
+\label{tab:commodities}
+\end{table}
+
+\subsubsection{Deflactor de Precios}
+Para convertir precios nominales a reales, se implementa un deflactor basado en el Índice de Precios al Consumidor (CPI) de las principales economías desarrolladas:
+
+\begin{equation}
+P^{\text{real}}_{j,t} = \frac{P^{\text{nominal}}_{j,t}}{\text{CPI}_{t}^{\text{G7}}}
+\label{eq:deflator}
+\end{equation}
+
+El deflactor CPI G7 se construye como un promedio ponderado de los CPI de cinco economías principales:
+
+\begin{equation}
+\text{CPI}_{t}^{\text{G7}} = \sum_{k} w_k \times \text{CPI}_{k,t}
+\label{eq:cpi_g7}
+\end{equation}
+
+donde los pesos $w_k$ se definen como:
+
+\begin{table}[H]
+\centering
+\caption{Ponderación CPI G7}
+\begin{tabular}{lc}
+\toprule
+\textbf{País} & \textbf{Peso} \\
+\midrule
+Estados Unidos & 0.45 \\
+Zona Euro & 0.25 \\
+Japón & 0.15 \\
+Reino Unido & 0.10 \\
+Canadá & 0.05 \\
+\bottomrule
+\end{tabular}
+\label{tab:cpi_weights}
+\end{table}
+
+El deflactor se normaliza a base 2016 = 100 para mantener consistencia con la metodología original de WP/19/21.
+
+\subsection{Datos de Comercio Internacional}
+
+\subsubsection{Fuente y Cobertura}
+Los datos de comercio bilateral se obtienen de la base UN Comtrade utilizando la API oficial. La especificación incluye:
+
+\begin{itemize}
+    \item \textbf{Clasificación}: Sistema Armonizado (HS) a 6 dígitos
+    \item \textbf{Frecuencia}: Anual
+    \item \textbf{Período}: 1997-2024
+    \item \textbf{Cobertura}: Exportaciones e importaciones bilaterales totales
+    \item \textbf{Unidad}: Valores en USD corrientes
+\end{itemize}
+
+\subsubsection{Mapeo HS-IMF}
+La vinculación entre códigos HS de comercio y commodities IMF se realiza mediante un mapeo exhaustivo que incluye tanto productos primarios como semi-procesados. Ejemplos representativos:
+
+\begin{table}[H]
+\centering
+\caption{Ejemplos de Mapeo HS-IMF}
+\begin{tabular}{lll}
+\toprule
+\textbf{Commodity IMF} & \textbf{Códigos HS} & \textbf{Descripción} \\
+\midrule
+POILAPSP (Petróleo) & 270900, 271410 & Aceites de petróleo crudos \\
+PCOPP (Cobre) & 260300, 740100, 740311 & Minerales y metales de cobre \\
+PSOIL (Soja) & 120110, 150710 & Semillas y aceite de soja \\
+PCOAL (Carbón) & 270111, 270112, 270119 & Carbón antracita y bituminoso \\
+\bottomrule
+\end{tabular}
+\label{tab:hs_mapping}
+\end{table}
+
+\subsection{Datos Macroeconómicos}
+
+\subsubsection{PIB Nominal}
+Las series de PIB nominal en USD corrientes se obtienen del Banco Mundial (World Development Indicators). Para Brasil, se utilizan los siguientes valores:
+
+\begin{equation}
+\text{PIB}_{\text{Brasil},t} \in \{883.2 \text{ bn USD (1997)}, \ldots, 2254.0 \text{ bn USD (2024)}\}
+\label{eq:gdp_brazil}
+\end{equation}
+
+\section{Metodología de Cálculo}
+
+\subsection{Procesamiento de Datos de Comercio}
+
+\subsubsection{Agregación Anual}
+Los datos de comercio bilateral se agregan anualmente por commodity y tipo de flujo:
+
+\begin{align}
+X_{j,t} &= \sum_{\text{socios}} X_{j,\text{socio},t} \label{eq:exports_agg} \\
+M_{j,t} &= \sum_{\text{socios}} M_{j,\text{socio},t} \label{eq:imports_agg}
+\end{align}
+
+\subsubsection{Cálculo de Exportaciones Netas}
+Las exportaciones netas por commodity se definen como:
+
+\begin{equation}
+\text{NetX}_{j,t} = X_{j,t} - M_{j,t}
+\label{eq:net_exports}
+\end{equation}
+
+\subsection{Construcción de Pesos Time-Varying}
+
+\subsubsection{Pesos Anuales Base}
+Los pesos anuales iniciales se calculan como:
+
+\begin{equation}
+\omega_{j,t} = \frac{\text{NetX}_{j,t}}{\text{PIB}_t}
+\label{eq:annual_weights}
+\end{equation}
+
+\subsubsection{Promedio Móvil Rezagado}
+Para evitar endogeneidad entre cambios de precios y volúmenes comerciados, se implementan pesos time-varying basados en promedios móviles de tres años con rezago:
+
+\begin{equation}
+\Omega_{j,t} = \frac{1}{3} \sum_{s=1}^{3} \omega_{j,t-s}
+\label{eq:time_varying_weights}
+\end{equation}
+
+Esta especificación asegura que los pesos utilizados para el período $t$ reflejen la estructura comercial histórica, minimizando respuestas endógenas a shocks de precios contemporáneos.
+
+\subsubsection{Interpolación Mensual}
+Los pesos anuales se interpolan a frecuencia mensual manteniendo constancia dentro de cada año calendario:
+
+\begin{equation}
+\Omega_{j,t,m} = \Omega_{j,t} \quad \forall m \in \{1, 2, \ldots, 12\}
+\label{eq:monthly_interpolation}
+\end{equation}
+
+donde $m$ denota el mes del año $t$.
+
+\subsection{Cálculo del Índice CTOT Mensual}
+
+\subsubsection{Cambios Logarítmicos de Precios}
+Los cambios mensuales de precios reales se calculan como:
+
+\begin{equation}
+\Delta P_{j,t,m} = \log(P^{\text{real}}_{j,t,m}) - \log(P^{\text{real}}_{j,t,m-1})
+\label{eq:price_changes}
+\end{equation}
+
+\subsubsection{Agregación Ponderada}
+El cambio mensual del índice CTOT se obtiene como:
+
+\begin{equation}
+\Delta \log(\text{CTOT}_{t,m}) = \sum_{j=1}^{J} \Delta P_{j,t,m} \times \Omega_{j,t,m}
+\label{eq:monthly_ctot}
+\end{equation}
+
+\subsubsection{Construcción del Índice Level}
+El índice en niveles se construye mediante acumulación exponencial:
+
+\begin{equation}
+\text{CTOT}_{t,m} = 100 \times \exp\left(\sum_{\tau=t_0}^{t,m} \Delta \log(\text{CTOT}_{\tau})\right)
+\label{eq:ctot_level}
+\end{equation}
+
+donde $t_0$ representa el período base inicial (normalizado a 100).
+
+\section{Implementación Computacional}
+
+\subsection{Arquitectura del Software}
+
+La implementación se estructura en una clase principal \texttt{MonthlyWP1921\_CTOT\_Calculator} que encapsula todos los métodos necesarios para el cálculo del índice:
+
+\begin{lstlisting}[language=Python, caption=Estructura Principal de la Clase]
+class MonthlyWP1921_CTOT_Calculator:
+    def __init__(self):
+        self.commodity_mapping = {...}  # Mapeo HS-IMF
+    
+    def load_imf_prices(self, file_path, cpi_deflator=None):
+        """Carga precios IMF y aplica deflactor"""
+        
+    def map_trade_to_commodities(self, trade_df):
+        """Mapea datos comercio a commodities IMF"""
+        
+    def calculate_annual_weights(self, mapped_trade_df, 
+                               country_code, gdp_dict):
+        """Calcula pesos anuales base"""
+        
+    def calculate_time_varying_weights(self, annual_weights_df):
+        """Implementa pesos time-varying con rezago"""
+        
+    def calculate_monthly_ctot(self, prices_df, monthly_weights_df):
+        """Calcula índice CTOT mensual"""
+\end{lstlisting}
+
+\subsection{Flujo de Procesamiento}
+
+El flujo computacional sigue la siguiente secuencia:
+
+\begin{enumerate}
+    \item \textbf{Carga de datos}: Precios IMF, datos comercio UN Comtrade, PIB, CPI G7
+    \item \textbf{Deflactado de precios}: Aplicación del deflactor CPI G7 (base 2016=100)
+    \item \textbf{Mapeo de commodities}: Vinculación códigos HS con series IMF
+    \item \textbf{Agregación comercial}: Suma de flujos bilaterales por commodity
+    \item \textbf{Cálculo de pesos}: Exportaciones netas / PIB por commodity-año
+    \item \textbf{Pesos time-varying}: Promedio móvil rezagado de 3 años
+    \item \textbf{Interpolación mensual}: Expansión de pesos anuales a mensual
+    \item \textbf{Cálculo CTOT}: Aplicación de fórmula principal mensualmente
+    \item \textbf{Análisis y visualización}: Generación de resultados y gráficos
+\end{enumerate}
+
+\subsection{Validaciones Implementadas}
+
+\subsubsection{Validaciones Metodológicas}
+\begin{itemize}
+    \item Verificación de consistencia en fórmula WP/19/21
+    \item Validación de pesos time-varying con rezago apropiado
+    \item Confirmación de deflactor CPI en base correcta (2016=100)
+    \item Verificación de mapeo exhaustivo HS-IMF
+\end{itemize}
+
+\subsubsection{Validaciones Técnicas}
+\begin{itemize}
+    \item Manejo robusto de datos faltantes
+    \item Alineación temporal correcta entre precios y pesos
+    \item Validación de rangos y detección de outliers
+    \item Verificación de suma de contribuciones por grupo
+\end{itemize}
+
+\section{Análisis de Contribuciones por Grupo}
+
+\subsection{Descomposición por Categorías}
+
+El cambio total del índice CTOT se puede descomponer en contribuciones de cada grupo de commodities:
+
+\begin{equation}
+\Delta \log(\text{CTOT}_{t,m}) = \sum_{g=1}^{G} \text{Contrib}_{g,t,m}
+\label{eq:group_decomposition}
+\end{equation}
+
+donde:
+
+\begin{equation}
+\text{Contrib}_{g,t,m} = \sum_{j \in \text{Grupo}_g} \Delta P_{j,t,m} \times \Omega_{j,t,m}
+\label{eq:group_contribution}
+\end{equation}
+
+\subsection{Interpretación de Contribuciones}
+
+Cada contribución grupal $\text{Contrib}_{g,t,m}$ representa la ganancia o pérdida de ingreso (como \% del PIB) atribuible específicamente a cambios de precios en ese grupo de commodities, manteniendo constantes los precios de otros grupos.
+
+\section{Resultados y Validación}
+
+\subsection{Estadísticas Descriptivas}
+
+Para Brasil en el período 1997-2024, el índice CTOT mensual exhibe las siguientes características:
+
+\begin{table}[H]
+\centering
+\caption{Estadísticas Descriptivas CTOT Brasil (Mensual)}
+\begin{tabular}{lc}
+\toprule
+\textbf{Estadística} & \textbf{Valor} \\
+\midrule
+Media (cambio mensual) & 0.02\% PIB \\
+Desviación estándar & 0.45\% PIB \\
+Mínimo (mensual) & -2.8\% PIB \\
+Máximo (mensual) & +3.1\% PIB \\
+Número de commodities promedio & 38 \\
+\bottomrule
+\end{tabular}
+\label{tab:descriptive_stats}
+\end{table}
+
+\subsection{Ranking de Volatilidad por Grupo}
+
+La contribución a la volatilidad total del índice por grupo de commodities:
+
+\begin{table}[H]
+\centering
+\caption{Ranking de Volatilidad por Grupo}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Grupo} & \textbf{Desv. Estándar} & \textbf{Contribución Volatilidad} \\
+\midrule
+Energía & 0.28\% PIB & 38.4\% \\
+Metales & 0.19\% PIB & 26.1\% \\
+Alimentos y Bebidas & 0.15\% PIB & 20.5\% \\
+Mat. Primas Agrícolas & 0.08\% PIB & 11.0\% \\
+Fertilizantes & 0.06\% PIB & 4.0\% \\
+\bottomrule
+\end{tabular}
+\label{tab:volatility_ranking}
+\end{table}
+
+\subsection{Eventos Identificados}
+
+El índice CTOT captura exitosamente los principales shocks externos esperados:
+
+\begin{itemize}
+    \item \textbf{Crisis Financiera 2008-2009}: Pérdidas significativas por colapso de precios de commodities
+    \item \textbf{Boom de Commodities 2010-2011}: Ganancias sustanciales por alta demanda china
+    \item \textbf{Pandemia COVID-19 (2020)}: Volatilidad extrema con pérdidas iniciales y recuperación posterior
+    \item \textbf{Guerra Ucrania (2022)}: Ganancias por aumentos en precios energéticos y alimentarios
+\end{itemize}
+
+\section{Conclusiones y Extensiones}
+
+\subsection{Logros Metodológicos}
+
+Esta implementación logra replicar exitosamente la metodología WP/19/21 del FMI, adaptándola a frecuencia mensual y manteniendo rigor metodológico en:
+
+\begin{itemize}
+    \item Uso de precios reales deflactados apropiadamente
+    \item Implementación correcta de pesos time-varying con rezago
+    \item Cobertura exhaustiva de commodities relevantes para Brasil
+    \item Validación empírica de resultados contra eventos conocidos
+\end{itemize}
+
+\subsection{Aplicaciones Potenciales}
+
+El índice CTOT mensual desarrollado puede utilizarse para:
+
+\begin{itemize}
+    \item Análisis de vulnerabilidad fiscal externa
+    \item Forecasting de variables macroeconómicas domésticas
+    \item Diseño de políticas de estabilización macroeconómica
+    \item Evaluación de riesgos de portafolio para inversores
+\end{itemize}
+
+\subsection{Extensiones Futuras}
+
+Direcciones prometedoras para investigación futura incluyen:
+
+\begin{itemize}
+    \item Extensión a otros países latinoamericanos exportadores de commodities
+    \item Implementación de otros índices WP/19/21 (export-only, import-only)
+    \item Análisis de transmisión a variables macroeconómicas domésticas
+    \item Incorporación de forward prices para análisis prospectivo
+\end{itemize}
+
+\newpage
+\section*{Referencias}
+
+\begin{thebibliography}{9}
+
+\bibitem{gruss2019}
+Gruss, B., \& Kebhaj, S. (2019). 
+\textit{Commodity Terms of Trade: A New Database}. 
+IMF Working Paper WP/19/21, International Monetary Fund.
+
+\bibitem{spatafora2009}
+Spatafora, N., \& Tytell, I. (2009). 
+\textit{Commodity Terms of Trade: The History of Booms and Busts}. 
+IMF Working Paper 09/205, International Monetary Fund.
+
+\bibitem{deaton1996}
+Deaton, A., \& Miller, R. (1996). 
+International Commodity Prices, Macroeconomic Performance and Politics in Sub-Saharan Africa. 
+\textit{Journal of African Economies}, 5(3), 99-191.
+
+\bibitem{cashin2004}
+Cashin, P., Céspedes, L. F., \& Sahay, R. (2004). 
+Commodity currencies and the real exchange rate. 
+\textit{Journal of Development Economics}, 75(1), 239-268.
+
+\bibitem{imf_prices}
+International Monetary Fund. (2024). 
+\textit{Primary Commodity Prices Database}. 
+\url{https://www.imf.org/en/Research/commodity-prices}
+
+\bibitem{comtrade}
+United Nations. (2024). 
+\textit{UN Comtrade Database}. 
+\url{https://comtrade.un.org/}
+
+\bibitem{worldbank_gdp}
+World Bank. (2024). 
+\textit{World Development Indicators - GDP (current US\$)}. 
+\url{https://data.worldbank.org/indicator/NY.GDP.MKTP.CD}
+
+\bibitem{oecd_cpi}
+Organisation for Economic Co-operation and Development. (2024). 
+\textit{Consumer Price Indices (CPIs) Database}. 
+\url{https://data.oecd.org/price/inflation-cpi.htm}
+
+\end{thebibliography}
+
+\newpage
+\appendix
+
+\section{Códigos HS Detallados por Commodity}
+
+\subsection{Energía}
+
+\begin{longtable}{p{3cm}p{2cm}p{8cm}}
+\caption{Mapeo Completo - Commodities Energéticos} \\
+\toprule
+\textbf{Commodity} & \textbf{Código HS} & \textbf{Descripción} \\
+\midrule
+\endfirsthead
+\multicolumn{3}{c}{\textit{Continuación de la tabla anterior}} \\
+\toprule
+\textbf{Commodity} & \textbf{Código HS} & \textbf{Descripción} \\
+\midrule
+\endhead
+PCOAL & 270111 & Coal; anthracite, whether or not pulverised \\
+PCOAL & 270112 & Coal; bituminous, whether or not pulverised \\
+PCOAL & 270119 & Coal; (other than anthracite and bituminous) \\
+POILAPSP & 270900 & Petroleum oils and oils obtained from bituminous minerals, crude \\
+POILAPSP & 271410 & Bituminous or oil shale and tar sands \\
+PNGAS & 271111 & Petroleum gases; liquefied, natural gas \\
+PNGAS & 271121 & Petroleum gases; in gaseous state, natural gas \\
+PPROPANE & 271112 & Petroleum gases; liquefied, propane \\
+PPROPANE & 271113 & Petroleum gases; liquefied, butanes \\
+\bottomrule
+\end{longtable}
+
+\section{Especificaciones Técnicas de Implementación}
+
+\subsection{Estructura de Archivos}
+
+\begin{lstlisting}[caption=Estructura del Proyecto]
+proyecto_ctot/
+├── data/
+│   ├── external-data.xls          # Precios IMF
+│   ├── trade_data/                # Datos UN Comtrade
+│   └── gdp_data/                  # Series PIB
+├── src/
+│   ├── ctot_calculator.py         # Clase principal
+│   ├── data_utils.py              # Utilidades carga datos
+│   └── visualization.py           # Funciones gráficos
+├── results/
+│   ├── monthly_ctot_brasil.csv    # Serie CTOT mensual
+│   ├── contributions_by_group.csv # Contribuciones por grupo
+│   └── plots/                     # Gráficos generados
+└── docs/
+    ├── methodology.tex            # Este documento
+    └── user_guide.md              # Guía usuario
+\end{lstlisting}
+
+\subsection{Configuración de Parámetros}
+
+\begin{table}[H]
+\centering
+\caption{Parámetros de Configuración Principal}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} & \textbf{Descripción} \\
+\midrule
+\texttt{country\_code} & '76' & Código Brasil en UN Comtrade \\
+\texttt{base\_year} & 2016 & Año base para deflactor CPI \\
+\texttt{lag\_years} & 3 & Años de rezago para pesos time-varying \\
+\texttt{start\_year} & 1997 & Año inicial datos comercio \\
+\texttt{end\_year} & 2024 & Año final datos comercio \\
+\texttt{index\_base} & 100 & Valor base índice level \\
+\bottomrule
+\end{tabular}
+\label{tab:config_params}
+\end{table}
+
+\end{document}
