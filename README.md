@@ -1,4 +1,4 @@
-# TALVI - Terms of Trade Analysis for Latin America and Vulnerable Economies
+# Terms of Trade Analysis for Latin America and Vulnerable Economies
 
 ## 🎯 Overview
 
