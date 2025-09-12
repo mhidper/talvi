@@ -35,7 +35,7 @@ pip install -r requirements.txt
 ### Basic Usage
 
 ```python
-from src.ctot_calculator import MonthlyWP1921_CTOT_Calculator, calculate_monthly_ctot_wp1921
+from latam_vulnerability_toolbox.ctot import MonthlyWP1921_CTOT_Calculator, calculate_monthly_ctot_wp1921
 
 # Define your country data
 gdp_brasil = {
@@ -81,21 +81,22 @@ Where:
 talvi/
 ├── README.md                      # This file
 ├── requirements.txt               # Python dependencies
-├── data/
-│   ├── external-data.xls          # IMF commodity prices
-│   └── gdp_brasil.py              # Brazil GDP data
-├── src/
-│   ├── ctot_calculator.py         # Main calculator class
-│   └── utils.py                   # Utility functions
-├── notebooks/
-│   ├── 01_ctot_calculation.ipynb  # Main analysis notebook
-│   └── 02_group_analysis.ipynb    # Group decomposition
-├── results/
-│   ├── monthly_ctot_brasil.csv    # Final CTOT series
-│   └── plots/                     # Generated visualizations
-└── docs/
-    ├── methodology.tex            # Complete methodology (LaTeX)
-    └── user_guide.md              # Detailed usage guide
+├── data/                          # Raw and processed data for the analysis
+├── latam_vulnerability_toolbox/   # Core Python package with all logic
+│   ├── __init__.py
+│   ├── analysis.py                # Analysis functions
+│   ├── ctot.py                    # Main calculator class and functions
+│   ├── data_loader.py             # Functions for loading data
+│   ├── utils.py                   # Utility functions
+│   └── config/                    # Configuration files (e.g., commodity mappings)
+├── notebooks/                     # Jupyter notebooks for exploration and examples
+│   ├── example_usage.ipynb
+│   └── ...
+├── reports/                       # Generated output, such as plots and HTML reports
+│   ├── figures/
+│   └── html/
+├── docs/                          # Documentation files (LaTeX, etc.)
+└── Bibliografía/                  # Bibliography and research papers
 ```
 
 ## 📊 Sample Results for Brazil
@@ -188,7 +189,7 @@ This tool is particularly valuable for:
 - 📄 **Complete Methodology**: [`docs/methodology.pdf`](docs/methodology.pdf)
 - 📖 **User Guide**: [`docs/user_guide.md`](docs/user_guide.md)
 - 📓 **Example Notebooks**: [`notebooks/`](notebooks/)
-- 🔧 **API Documentation**: See docstrings in [`src/`](src/)
+- 🔧 **API Documentation**: See docstrings in [`latam_vulnerability_toolbox/`](latam_vulnerability_toolbox/)
 
 ## 🤝 Contributing
 
