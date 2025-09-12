@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# LaTeX auxiliary files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Output/Report files
+reports/
+output/
+
+# Ignore empty src directory
+src/
