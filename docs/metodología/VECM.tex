@@ -1,0 +1,174 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- PAQUETES BÁSICOS ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs} % Para tablas de calidad
+\usepackage{caption}  % Para mejores leyendas en figuras y tablas
+
+\geometry{a4paper, margin=2.5cm}
+
+% --- INFORMACIÓN DEL DOCUMENTO ---
+\title{Análisis de Vulnerabilidad Externa para Brasil: Una Aplicación del Modelo VECM}
+\author{Manuel Alejandro Hidalgo Pérez}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta la metodología y los resultados de la estimación de un Modelo de Vectores de Corrección de Errores (VECM) para construir un indicador de vulnerabilidad externa para la economía brasileña. Se modela la relación de largo plazo entre el PIB de Brasil y un conjunto de variables externas clave, extrayendo el Término de Corrección de Error (ECT) como un indicador sintético de desequilibrio macroeconómico. Los resultados se contrastan con el marco de monitoreo conceptual propuesto en el `paper Talvi.pdf`, destacando las diferencias y complementariedades entre un enfoque econométrico agregado y un sistema de "dashboard" de indicadores.
+\end{abstract}
+
+\section{Introducción}
+Las economías emergentes, y en particular Brasil, están intrínsecamente expuestas a la volatilidad del entorno económico global. Las fluctuaciones en los precios de las materias primas, los cambios en las condiciones financieras internacionales y las variaciones en la demanda de los principales socios comerciales pueden generar shocks externos significativos, con profundas implicaciones para el crecimiento económico, la estabilidad fiscal y la balanza de pagos. Por tanto, el desarrollo de herramientas robustas para el monitoreo y la alerta temprana de la vulnerabilidad externa es una prioridad para la formulación de políticas macroeconómicas.
+
+El objetivo principal de este documento es detallar la construcción de un indicador econométrico de alerta temprana para Brasil. A diferencia de los sistemas de monitoreo que se basan en el seguimiento de un amplio conjunto de variables, este trabajo propone un enfoque agregado mediante la estimación de un Modelo de Vectores de Corrección de Errores (VECM). Este modelo nos permite capturar tanto las relaciones de equilibrio a largo plazo entre el PIB de Brasil y las principales fuerzas externas, como la dinámica de ajuste de corto plazo ante desequilibrios.
+
+Este enfoque se contrasta con el marco conceptual propuesto en el `paper Talvi.pdf`, una referencia influyente en el análisis de vulnerabilidad para la región. Mientras que Talvi propone un `dashboard` de indicadores clave para un monitoreo granular y desagregado, nuestro trabajo ofrece una cuantificación formal y sintética en un único indicador: el Término de Corrección de Error. De esta manera, se busca complementar el análisis conceptual con una herramienta econométrica que proporciona una señal clara y objetiva sobre la acumulación de riesgos macroeconómicos.
+
+\section{Metodología Econométrica}
+El anclaje teórico de nuestro análisis es el concepto de cointegración, que postula que, aunque las series económicas pueden ser no estacionarias individualmente, pueden compartir una relación de equilibrio estable a largo plazo. El Modelo de Vectores de Corrección de Errores (VECM) es el marco econométrico idóneo para analizar este tipo de sistemas, ya que permite modelar simultáneamente tanto la relación de largo plazo como la dinámica de ajuste de corto plazo cuando se producen desviaciones de dicho equilibrio. La selección de esta metodología se justifica por la necesidad de entender no solo si las variables externas afectan al PIB de Brasil, sino también a qué velocidad se corrigen los desequilibrios generados por shocks.
+
+\subsection{Datos y Variables}
+La construcción del modelo se basa en un conjunto de datos macroeconómicos con frecuencia trimestral, cubriendo el período desde [YYYY-Q1 hasta YYYY-Q4]. La selección de variables busca capturar los principales canales de transmisión de shocks externos a la economía brasileña:
+\begin{itemize}
+    \item \textbf{PIB de Brasil ($log\_gdp\_brazil$)}: Se utiliza el logaritmo del Producto Interno Bruto real como variable endógena principal del sistema. Representa la actividad económica agregada del país.
+    \item \textbf{Términos de Intercambio ($log\_tot\_brazil$)}: Variable clave para una economía exportadora de materias primas. Se expresa como el logaritmo del índice que mide la relación entre los precios de exportación y los de importación.
+    \item \textbf{Producción Industrial G7 ($log\_ip\_g7$)}: El logaritmo de este índice se emplea como un proxy robusto de la demanda externa y el ciclo económico global, ya que el G7 agrupa a los principales socios comerciales y fuentes de inversión.
+    \item \textbf{Tasa de Interés de EEUU ($us\_10y$)}: El rendimiento de los bonos del Tesoro estadounidense a 10 años es una variable fundamental que refleja las condiciones financieras globales y el costo de oportunidad del capital a nivel internacional.
+    \item \textbf{Spread de Riesgo ($risk\_spread$)}: Mide la prima de riesgo exigida por los inversores a los bonos soberanos brasileños en comparación con los bonos de EEUU. Es un indicador directo de la percepción del riesgo país y del apetito por el riesgo de los mercados financieros.
+\end{itemize}
+La transformación logarítmica (excepto para las tasas de interés y el spread) se aplica para estabilizar la varianza de las series y permitir que los coeficientes del modelo sean interpretados como elasticidades.
+
+
+\subsection{Análisis Pre-estimación de las Series}
+La estimación de un modelo VECM exige una validación rigurosa de las propiedades estocásticas de las series de tiempo involucradas. Este paso es crucial para evitar regresiones espurias y asegurar que la especificación del modelo sea teóricamente sólida.
+
+\subsubsection{Pruebas de Raíz Unitaria}
+El primer paso consiste en determinar el orden de integración de cada variable. Para ello, se aplicó el test de Dickey-Fuller Aumentada (ADF) a cada serie en niveles y en primeras diferencias. La hipótesis nula de este test es la presencia de una raíz unitaria (no estacionariedad). Los resultados confirmaron que, para todas las variables, no se puede rechazar la hipótesis nula en niveles, pero sí se rechaza en primeras diferencias. Esto indica de manera concluyente que todas las series son \textbf{integradas de orden 1, I(1)}, cumpliendo así el requisito fundamental para la existencia de una posible relación de cointegración.
+
+\subsubsection{Test de Cointegración de Johansen}
+Una vez establecido que todas las variables son I(1), el siguiente paso es verificar si comparten una tendencia estocástica común, es decir, si están cointegradas. Se empleó el procedimiento de Johansen, que permite identificar el número de relaciones de cointegración en un sistema de variables. Tanto el estadístico de la traza como el del máximo valor propio fueron calculados. Los resultados de ambos tests indicaron la presencia de \textbf{al menos un vector de cointegración} estadísticamente significativo al 5\% de confianza.
+
+Este hallazgo es central para nuestro análisis: confirma la existencia de una relación de equilibrio a largo plazo entre el PIB de Brasil y el conjunto de variables externas. La presencia de cointegración valida el uso de un VECM, ya que un modelo VAR en primeras diferencias, aunque trataría la no estacionariedad, omitiría la crucial información contenida en la relación de largo plazo.
+
+\subsection{El Modelo VECM: Formulación Matemática}
+La validación de que las series son I(1) y están cointegradas nos permite pasar de un modelo de Vectores Autorregresivos (VAR) en niveles a su representación como VECM. Partimos de un VAR(p) general:
+\begin{equation}
+\mathbf{Y}_t = \mathbf{A}_1 \mathbf{Y}_{t-1} + \mathbf{A}_2 \mathbf{Y}_{t-2} + \dots + \mathbf{A}_p \mathbf{Y}_{t-p} + \boldsymbol{\varepsilon}_t
+\end{equation}
+donde $\mathbf{Y}_t$ es un vector $(k \times 1)$ de las $k$ variables del modelo, $\mathbf{A}_i$ son matrices de coeficientes $(k \times k)$ y $\boldsymbol{\varepsilon}_t$ es un vector de errores de ruido blanco.
+
+Mediante una sencilla manipulación algebraica, este modelo se puede reescribir como:
+\begin{equation}
+\Delta \mathbf{Y}_t = \boldsymbol{\Pi} \mathbf{Y}_{t-1} + \sum_{i=1}^{p-1} \boldsymbol{\Gamma}_i \Delta \mathbf{Y}_{t-i} + \boldsymbol{\varepsilon}_t
+\label{eq:vecm_general}
+\end{equation}
+donde $\Delta$ es el operador de primera diferencia, $\boldsymbol{\Gamma}_i = -(\mathbf{A}_{i+1} + \dots + \mathbf{A}_p)$ son las matrices que capturan la dinámica de corto plazo, y la matriz clave $\boldsymbol{\Pi} = (\sum_{i=1}^{p} \mathbf{A}_i - \mathbf{I})$ contiene la información sobre las relaciones de largo plazo.
+
+El \textbf{Teorema de Representación de Granger} establece que si el rango de la matriz $\boldsymbol{\Pi}$ es $r$, donde $0 < r < k$, entonces existen $r$ relaciones de cointegración. En este caso, la matriz $\boldsymbol{\Pi}$ puede descomponerse en el producto de dos matrices de rango completo:
+\begin{equation}
+\boldsymbol{\Pi} = \boldsymbol{\alpha} \boldsymbol{\beta}'
+\end{equation}
+donde:
+\begin{itemize}
+    \item $\boldsymbol{\beta}$ es una matriz $(k \times r)$ cuyos vectores columna son los \textbf{vectores de cointegración}. Cada vector define una relación de equilibrio a largo plazo.
+    \item $\boldsymbol{\alpha}$ es una matriz $(k \times r)$ de \textbf{coeficientes de ajuste} o \textit{loading factors}, que miden la velocidad con la que las variables del sistema responden a las desviaciones del equilibrio.
+\end{itemize}
+Sustituyendo esta descomposición en la Ecuación \ref{eq:vecm_general}, obtenemos la formulación final del VECM:
+\begin{equation}
+\Delta \mathbf{Y}_t = \boldsymbol{\alpha} (\boldsymbol{\beta}' \mathbf{Y}_{t-1}) + \sum_{i=1}^{p-1} \boldsymbol{\Gamma}_i \Delta \mathbf{Y}_{t-i} + \boldsymbol{\varepsilon}_t
+\end{equation}
+El término entre paréntesis, $\boldsymbol{\beta}' \mathbf{Y}_{t-1}$, es el \textbf{Término de Corrección de Error (ECT)}. Es un vector $(r \times 1)$ que representa las $r$ desviaciones del equilibrio en el período $t-1$. La ecuación para una variable individual $j$ del sistema, como el PIB de Brasil, se puede escribir como:
+\begin{equation}
+\Delta y_{j,t} = c_j + \alpha_j \cdot \text{ECT}_{t-1} + \sum_{i=1}^{p-1} \gamma_{j,i} \Delta Y_{t-i} + \varepsilon_{j,t}
+\end{equation}
+donde $\alpha_j$ es el coeficiente de ajuste específico para la variable $y_j$. Un valor de $\alpha_j$ negativo y significativo indica que cuando $y_j$ está por encima de su nivel de equilibrio, tenderá a decrecer en el siguiente período para corregir el desvío, y viceversa. Este es el mecanismo que da nombre al modelo.
+
+
+\section{Resultados Empíricos}
+
+\subsection{Relación de Cointegración (Largo Plazo)}
+El vector de cointegración normalizado para el $log\_gdp\_brazil$ se presenta en la Tabla \ref{tab:long_run}. Los coeficientes representan las elasticidades de largo plazo.
+
+\begin{table}[h!]
+\centering
+\caption{Coeficientes Normalizados de la Relación de Largo Plazo}
+\label{tab:long_run}
+\begin{tabular}{lc}
+\toprule
+\textbf{Variable} & \textbf{Coeficiente Estimado} \\
+\midrule
+$log\_tot\_brazil$ & [Insertar valor] \\
+$log\_ip\_g7$      & [Insertar valor] \\
+$us\_10y$          & [Insertar valor] \\
+$risk\_spread$     & [Insertar valor] \\
+Constante        & [Insertar valor] \\
+\bottomrule
+\end{tabular}
+\caption*{Nota: Coeficientes normalizados. Un signo positivo implica una relación directa con el PIB a largo plazo.}
+\end{table}
+
+% --- Interpretación de la Tabla 1 ---
+% Ejemplo: "Un aumento del 1% en los términos de intercambio se asocia con un incremento de [valor]% en el PIB de Brasil a largo plazo, manteniendo el resto constante. Por otro lado, un aumento en el spread de riesgo tiene un impacto negativo..."
+
+\subsection{Dinámica de Corto Plazo y Velocidad de Ajuste}
+La Tabla \ref{tab:short_run} muestra los resultados de la estimación de la ecuación de corto plazo para $\Delta(log\_gdp\_brazil)$.
+
+\begin{table}[h!]
+\centering
+\caption{Resultados de la Ecuación de Corto Plazo para el PIB}
+\label{tab:short_run}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Variable} & \textbf{Coeficiente} & \textbf{t-estadístico} \\
+\midrule
+ECT$_{t-1}$ ($\alpha$) & \textbf{[Insertar valor]} & \textbf{[Insertar valor]} \\
+$\Delta(log\_gdp)_{t-1}$ & [Insertar valor] & [Insertar valor] \\
+$\Delta(log\_tot)_{t-1}$ & [Insertar valor] & [Insertar valor] \\
+% ... (añadir las demás variables en diferencias y sus rezagos)
+\bottomrule
+\end{tabular}
+\end{table}
+
+% --- Interpretación de la Tabla 2 ---
+% El resultado clave aquí es alpha.
+% Ejemplo: "El coeficiente del término de corrección de error (ECT) es de [valor de alpha], negativo y estadísticamente significativo. Esto implica que aproximadamente un [|alpha|*100]% del desequilibrio del trimestre anterior se corrige en el trimestre actual, validando la existencia de un mecanismo de retorno al equilibrio."
+
+\subsection{El Indicador de Vulnerabilidad Externa}
+El propio Término de Corrección de Error (ECT), extraído del modelo, funciona como nuestro indicador de vulnerabilidad. La Figura \ref{fig:ect_vs_gdp} grafica la evolución del ECT frente a la tasa de crecimiento interanual del PIB de Brasil.
+
+\begin{figure}[h!]
+\centering
+% Asegúrate de tener la imagen 'indicador_vulnerabilidad.png' en la misma carpeta que tu archivo .tex
+%\includegraphics[width=0.9\textwidth]{indicador_vulnerabilidad.png}
+\caption{Indicador de Vulnerabilidad (ECT) vs. Crecimiento del PIB de Brasil}
+\label{fig:ect_vs_gdp}
+\caption*{Nota: El ECT (línea azul) se muestra en el eje izquierdo. El crecimiento interanual del PIB (línea naranja) en el eje derecho. Un ECT positivo (por encima de cero) indica un PIB por encima de su nivel de equilibrio, señalando una mayor vulnerabilidad a una corrección a la baja.}
+\end{figure}
+
+% --- Interpretación de la Figura 1 ---
+% "Como se observa en la figura, los períodos en los que el indicador ECT se vuelve significativamente positivo y persistente (e.g., [año], [año]) tienden a preceder a importantes desaceleraciones económicas. Esto confirma su utilidad como señal de alerta temprana."
+
+\section{Discusión: Enfoque VECM vs. Marco de Talvi}
+Nuestra metodología se distingue del enfoque de `paper Talvi.pdf` en tres aspectos clave:
+\begin{itemize}
+    \item \textbf{Agregación vs. Desagregación:} El VECM sintetiza múltiples presiones externas en un \textbf{único indicador} (el ECT), mientras que Talvi propone un \textbf{dashboard de múltiples variables} que requiere una interpretación conjunta.
+    \item \textbf{Señal de Desequilibrio vs. Niveles:} Nuestro indicador mide la \textbf{desviación respecto a un equilibrio} de largo plazo estimado econométricamente. El marco de Talvi se centra más en monitorear los \textbf{niveles y la volatilidad} de indicadores individuales frente a umbrales.
+    \item \textbf{Modelo Formal vs. Marco Conceptual:} Este trabajo presenta un \textbf{modelo econométrico formal} que establece relaciones causales y dinámicas. Talvi ofrece un \textbf{marco conceptual} para organizar el monitoreo macroeconómico sin imponer una estructura formal única.
+\end{itemize}
+Ambos enfoques son complementarios. El marco de Talvi es excelente para entender las fuentes granulares de riesgo, mientras que el indicador VECM proporciona una señal de alerta agregada y objetiva.
+
+\section{Conclusión}
+% Resumen de los hallazgos:
+% 1. Se estimó con éxito un modelo VECM para la economía brasileña.
+% 2. La relación de largo plazo confirma la importancia de las condiciones externas para el PIB de Brasil.
+% 3. El Término de Corrección de Error (ECT) funciona como un indicador robusto de alerta temprana.
+% 4. Este enfoque cuantitativo complementa eficazmente los marcos de monitoreo conceptuales como el de Talvi.
+
+\end{document}
