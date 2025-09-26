@@ -31,7 +31,84 @@ El objetivo principal de este documento es detallar la construcción de un indic
 
 Este enfoque se contrasta con el marco conceptual propuesto en el `paper Talvi.pdf`, una referencia influyente en el análisis de vulnerabilidad para la región. Mientras que Talvi propone un `dashboard` de indicadores clave para un monitoreo granular y desagregado, nuestro trabajo ofrece una cuantificación formal y sintética en un único indicador: el Término de Corrección de Error. De esta manera, se busca complementar el análisis conceptual con una herramienta econométrica que proporciona una señal clara y objetiva sobre la acumulación de riesgos macroeconómicos.
 
-\section{Metodología Econométrica}
+\section{Metodología y Resultados Empíricos}
+El anclaje teórico del análisis es el concepto de cointegración. Sin embargo, como se detallará, los resultados empíricos no validaron la existencia de una relación de cointegración para el conjunto de datos y variables utilizado. Por tanto, la metodología se adaptó para explorar las dinámicas de corto plazo.
+
+\subsection{Datos y Variables}
+La construcción del modelo se basa en un conjunto de datos macroeconómicos con frecuencia trimestral, cubriendo el período desde el primer trimestre de 2000 hasta el último de 2024. La selección de variables busca capturar los principales canales de transmisión de shocks externos a la economía brasileña:
+\begin{itemize}
+    \item \extbf{PIB de Brasil ($log\_gdp\_brazil$)}: Logaritmo del Producto Interno Bruto real.
+    \item \extbf{Términos de Intercambio ($log\_tot\_brazil$)}: Logaritmo del índice de términos de intercambio.
+    \item \extbf{Dummy de Pandemia}: Variable dicotómica que toma el valor 1 durante los trimestres de la pandemia de COVID-19 para capturar su efecto atípico.
+\end{itemize}
+Otras variables como la producción industrial del G7 y los indicadores financieros de EE.UU. fueron consideradas inicialmente, pero se excluyeron del modelo final presentado en el notebook.
+
+\subsection{Análisis de Estacionariedad y Cointegración}
+Se evaluaron las propiedades de las series de tiempo para determinar su orden de integración y la posible existencia de relaciones de largo plazo.
+
+\subsubsection{Pruebas de Raíz Unitaria}
+Se aplicaron los tests de Dickey-Fuller Aumentada (ADF) y Kwiatkowski-Phillips-Schmidt-Shin (KPSS) a las principales variables. Los resultados, resumidos en la Tabla \ref{tab:unit_root}, indicaron que tanto el PIB de Brasil como los términos de intercambio son series no estacionarias, integradas de orden 1, I(1).
+
+\begin{table}[h!]
+\centering
+\caption{Resultados de las Pruebas de Raíz Unitaria}
+\label{tab:unit_root}
+\begin{tabular}{lccc}
+	oprule
+\extbf{Variable} & 	 extbf{ADF p-valor} & 	 extbf{KPSS p-valor} & 	 extbf{Conclusión} 
+\
+\midrule
+$log\_gdp\_brazil$ & 0.464 & 0.010 & I(1) 
+
+$log\_tot\_brazil$ & 0.144 & 0.034 & I(1) 
+\
+\bottomrule
+\end{tabular}
+\caption*{Nota: La conclusión de I(1) se basa en no rechazar la H0 de raíz unitaria en el test ADF (p>0.05) y rechazar la H0 de estacionariedad en el test KPSS (p<0.05).}
+\end{table}
+
+\subsubsection{Test de Cointegración}
+Dado que se encontraron al menos dos variables I(1), se procedió a realizar el test de Johansen para verificar la existencia de una relación de cointegración. Sin embargo, los resultados del test **no permitieron rechazar la hipótesis nula de cero relaciones de cointegración**. El estadístico de la traza para la hipótesis de $r \le 0$ fue de 16.60, valor inferior al crítico del 5\% (18.40).
+
+La ausencia de cointegración implica que no existe una relación de equilibrio estable a largo plazo entre las variables analizadas. Este es un hallazgo empírico crucial que invalida la aplicación de un Modelo de Vectores de Corrección de Errores (VECM), ya que la premisa fundamental de dicho modelo (la existencia de una relación de cointegración a la que el sistema converge) no se cumple.
+
+\subsection{Modelo de Corto Plazo Estimado}
+A pesar de la ausencia de cointegración, el notebook procede a estimar un modelo similar en forma a un Modelo de Corrección de Errores (ECM) para explorar las dinámicas de corto plazo. La variable dependiente es el crecimiento trimestral del PIB ($\Delta(log\_gdp\_brazil)$). Los resultados de esta regresión se presentan en la Tabla \ref{tab:final_model}.
+
+Es importante destacar que, al no existir una relación de cointegración, el término "ECT" incluido en el modelo no puede interpretarse como un término de corrección de error genuino que representa desviaciones de un equilibrio de largo plazo. Su significancia podría estar capturando otras dinámicas espurias o de corto plazo.
+
+\begin{table}[h!]
+\centering
+\caption{Resultados del Modelo Estimado para $\Delta(log\_gdp\_brazil$)}
+\label{tab:final_model}
+\begin{tabular}{lcccc}
+	oprule
+\extbf{Variable} & 	 extbf{Coeficiente} & 	 extbf{Std. Error} & 	 extbf{t-estadístico} & 	 extbf{P>|t|} 
+\
+\midrule
+const            & 0.0060  & 0.002 &  3.736 & 0.000 
+
+ECT              & -0.0295 & 0.013 & -2.326 & 0.022 
+
+log	 tot	 brazil    & 0.0128  & 0.005 &  2.608 & 0.011 
+
+pandemia	 dummy   & -0.0142 & 0.009 & -1.520 & 0.132 
+\
+\bottomrule
+\end{tabular}
+\caption*{Nota: R² Ajustado = 0.116. Observaciones = 99. La especificación de este modelo es metodológicamente inconsistente dada la falta de cointegración, por lo que los resultados deben ser tomados con extrema cautela.}
+\end{table}
+
+\subsection{Interpretación de los Resultados}
+Dado el hallazgo de no cointegración, la interpretación se centra en los efectos de corto plazo, con las debidas reservas:
+\begin{itemize}
+    
+    	item La variable de términos de intercambio (en niveles) y el término constante son las únicas variables estadísticamente significativas (p < 0.05) para explicar el crecimiento trimestral del PIB.
+    	item El coeficiente de $log\_tot\_brazil$ (0.0128) sugiere una relación positiva contemporánea.
+    	item El R² ajustado del modelo es de apenas 11.6\%, lo que indica que la especificación tiene un poder explicativo muy limitado sobre la variación del crecimiento del PIB de Brasil.
+\end{itemize}
+El resultado principal del análisis es, por tanto, negativo: con las variables y el preprocesamiento de datos del notebook `v3`, no es posible construir un indicador de vulnerabilidad basado en un VECM robusto, ya que no se sostiene su pilar fundamental, la cointegración.
+
 El anclaje teórico de nuestro análisis es el concepto de cointegración, que postula que, aunque las series económicas pueden ser no estacionarias individualmente, pueden compartir una relación de equilibrio estable a largo plazo. El Modelo de Vectores de Corrección de Errores (VECM) es el marco econométrico idóneo para analizar este tipo de sistemas, ya que permite modelar simultáneamente tanto la relación de largo plazo como la dinámica de ajuste de corto plazo cuando se producen desviaciones de dicho equilibrio. La selección de esta metodología se justifica por la necesidad de entender no solo si las variables externas afectan al PIB de Brasil, sino también a qué velocidad se corrigen los desequilibrios generados por shocks.
 
 \subsection{Datos y Variables}

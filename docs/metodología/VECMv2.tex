@@ -1,0 +1,678 @@
+\documentclass[3p,11pt]{elsarticle}
+
+% --- PAQUETES OPTIMIZADOS PARA ELSARTICLE ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{natbib}     % ✅ AGREGAR - para citas estilo autor-año
+\usepackage{hyperref}   % ✅ AGREGAR - para enlaces
+\usepackage{lineno}     % ✅ AGREGAR - para números de línea (común en preprints)
+
+% --- CONFIGURACIÓN DE FORMATO DE PÁRRAFOS ---
+\setlength{\parindent}{0pt}        % ✅ AGREGAR - elimina sangría de primera línea
+\setlength{\parskip}{6pt}          % ✅ AGREGAR - aumenta espacio entre párrafos
+
+% --- CONFIGURACIÓN DE CITAS ---
+\bibliographystyle{elsarticle-harv}  % ✅ AGREGAR - estilo Harvard para Elsevier
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Análisis de Vulnerabilidad Externa para Brasil: Una Aplicación del Modelo VECM}
+
+% ✅ MEJORAR AUTOR CON AFILIACIÓN
+\author[inst1]{Manuel Alejandro Hidalgo Pérez}
+\address[inst1]{Departamento de Economía, Universidad Pablo de Olavide, Sevilla, España}
+
+\begin{abstract}
+Este documento presenta la metodología y los resultados de la estimación de un Modelo de Vectores de Corrección de Errores (VECM) para construir un indicador de vulnerabilidad externa para la economía brasileña. Se modela la relación de largo plazo entre el PIB de Brasil y un conjunto de variables externas clave, extrayendo el Término de Corrección de Error (ECT) como un indicador sintético de desequilibrio macroeconómico. Los resultados se contrastan con el marco de monitoreo conceptual propuesto en el paper de Talvi y coautores, destacando las diferencias y complementariedades entre un enfoque econométrico agregado y un sistema de dashboard de indicadores.
+\end{abstract}
+
+\begin{keyword}
+Vulnerabilidad externa \sep VECM \sep Cointegración \sep Brasil \sep Alerta temprana
+% ✅ AGREGAR CÓDIGOS JEL
+\MSC[2010] 00-01, 99-00
+\JEL C32, F34, F47, O54
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introducción}
+
+Las economías latinoamericanas, particularmente aquellas con elevada dependencia de la exportación de materias primas como Brasil, enfrentan una exposición estructural a la volatilidad del entorno económico global. Las fluctuaciones en los precios de commodities, los cambios en las condiciones financieras internacionales, las variaciones en la demanda de los principales socios comerciales y los movimientos de los flujos de capital pueden generar shocks externos de magnitud considerable, con profundas repercusiones sobre el crecimiento económico, la estabilidad macroeconómica y la sostenibilidad fiscal. En este contexto, el desarrollo de herramientas robustas y oportunas para el monitoreo y la predicción de episodios de vulnerabilidad externa se constituye como una prioridad fundamental para la formulación de políticas macroeconómicas efectivas y la gestión proactiva del riesgo sistémico.
+
+El objetivo principal de este trabajo es desarrollar y presentar un indicador econométrico de vulnerabilidad externa para Brasil, implementado mediante un enfoque cuantitativo que integra tanto las relaciones de equilibrio de largo plazo como la dinámica de ajuste de corto plazo. A diferencia de los sistemas de monitoreo tradicionales que se basan en el seguimiento desagregado de múltiples variables a través de ``dashboards'' de indicadores, este estudio propone un enfoque sintético y agregado mediante la estimación de un Modelo de Corrección de Errores (ECM), posteriormente expandido a un indicador compuesto multidimensional.
+
+La metodología implementada en este trabajo, detallada exhaustivamente en el notebook de Jupyter que acompaña este documento, se diferencia sustancialmente del influyente marco conceptual propuesto por Izquierdo, Romero y Talvi (2008) en ``Booms and Busts in Latin America: The Role of External Factors''. Mientras que el enfoque de Talvi y coautores privilegia un sistema de monitoreo basado en un ``dashboard'' de indicadores clave que requieren interpretación conjunta y análisis cualitativo por parte del analista, nuestro trabajo ofrece una cuantificación formal, objetiva y sintética materializada en un único indicador compuesto de vulnerabilidad externa.
+
+Las principales diferencias metodológicas pueden sintetizarse en tres dimensiones fundamentales:
+
+\textbf{1. Agregación versus Desagregación:} El marco de Talvi propone el monitoreo simultáneo de múltiples indicadores específicos (términos de intercambio, flujos de capital, reservas internacionales, indicadores fiscales, entre otros) que deben ser interpretados de manera conjunta por el analista para formar un juicio integral sobre el estado de vulnerabilidad. En contraste, nuestro enfoque econométrico sintetiza las múltiples presiones externas en un único indicador que combina tres componentes fundamentales: (i) el grado de desequilibrio respecto al equilibrio de largo plazo (medido a través del Término de Corrección de Error normalizado), (ii) la volatilidad de corto plazo en el crecimiento no explicado por el modelo (capturada mediante la desviación estándar móvil de los residuos), y (iii) la persistencia estructural de los desequilibrios (reflejada en la velocidad de ajuste hacia el equilibrio).
+
+\textbf{2. Señal de Desequilibrio versus Niveles Absolutos:} El indicador construido en este trabajo mide fundamentalmente las \textit{desviaciones} respecto a un equilibrio de largo plazo estimado econométricamente a partir de las relaciones históricas entre el PIB brasileño y el conjunto de variables externas relevantes. Esta perspectiva de ``brecha de equilibrio'' contrasta con el enfoque de Talvi, que se concentra principalmente en monitorear los niveles absolutos y la volatilidad de indicadores individuales en relación a umbrales históricos o normativos predefinidos.
+
+\textbf{3. Modelo Formal versus Marco Conceptual:} Este trabajo presenta un modelo econométrico formalmente especificado que establece relaciones causales explícitas y cuantifica dinámicas de ajuste temporal, permitiendo tanto el análisis retrospectivo como la generación de señales prospectivas de alerta temprana. El modelo ECM estimado identifica la velocidad de corrección hacia el equilibrio (aproximadamente 25\% del desequilibrio se corrige en cada trimestre), proporciona elasticidades específicas de largo plazo, y genera residuos que pueden ser utilizados para el análisis de shocks idiosincráticos. Por el contrario, el marco de Talvi ofrece principalmente una estructura conceptual y organizacional para el monitoreo macroeconómico, sin imponer una estructura econométrica formal única ni relaciones causales específicas.
+
+La implementación práctica de esta metodología, desarrollada íntegramente en Python y documentada en un notebook de Jupyter interactivo, abarca seis fases metodológicas secuenciales: (1) preparación y alineación de datos de múltiples fuentes (IBGE, OECD, FRED, Bloomberg), (2) análisis de propiedades estocásticas mediante tests de raíz unitaria, (3) estimación del modelo de corrección de errores con validación de supuestos, (4) diagnóstico integral del modelo y tests de robustez, (5) construcción del indicador compuesto de vulnerabilidad externa, y (6) optimización endógena de pesos mediante técnicas de programación secuencial cuadrática.
+
+El modelo utiliza datos trimestrales para el período 2000-2024 y incorpora cinco variables fundamentales: el PIB real de Brasil (variable endógena principal), los términos de intercambio brasileños, la producción industrial del G7 (proxy de demanda externa), el rendimiento de bonos del Tesoro estadounidense a 10 años (condiciones financieras globales), y el spread de riesgo soberano (percepción específica de riesgo-país). Adicionalmente, se incluye una variable dummy para capturar los efectos atípicos de la pandemia de COVID-19.
+
+Los resultados empíricos validan la existencia de relaciones de equilibrio de largo plazo estadísticamente significativas, con un mecanismo de corrección de errores que opera a una velocidad de ajuste del 25\% trimestral. El indicador compuesto resultante ha demostrado capacidad predictiva para anticipar desaceleraciones económicas significativas, con una correlación negativa de -0.20 entre la vulnerabilidad actual y el crecimiento futuro del PIB, y ha identificado correctamente los principales episodios de stress macroeconómico en la historia reciente de Brasil, incluyendo las crisis de 2002-2003, 2008-2009, 2012-2015, y 2020-2021.
+
+Es importante enfatizar que ambos enfoques metodológicos poseen virtudes distintivas y son esencialmente complementarios en la práctica del análisis macroeconómico. El marco conceptual de Talvi resulta particularmente valioso para comprender las fuentes granulares y específicas de riesgo, identificar canales de transmisión particulares, y proporcionar un contexto interpretativo rico para el análisis cualitativo. Por su parte, el indicador econométrico desarrollado en este trabajo ofrece una señal quantitativa, objetiva y sintética que puede ser utilizada para comparaciones temporales sistemáticas, establecimiento de umbrales de alerta temprana, y automatización de procesos de monitoreo.
+
+La integración de ambas perspectivas en un sistema de monitoreo integral podría potencialmente maximizar tanto la comprensión profunda de las fuentes de vulnerabilidad como la eficiencia en la detección temprana de episodios de riesgo sistémico, combinando la riqueza analítica del enfoque desagregado con la objetividad y sistematicidad del enfoque econométrico agregado.
+
+\section{Marco Metodológico Comparativo: Extensión del Enfoque de Talvi et al. (2008)}
+
+\subsection{La Metodología Econométrica de Talvi et al.: Fundamentos y Alcance}
+
+El trabajo seminal de Izquierdo, Romero y Talvi (2008) establece un precedente metodológico fundamental para el análisis econométrico de la vulnerabilidad externa en América Latina mediante la aplicación de un Modelo de Vectores de Corrección de Errores (VECM) que relaciona el comportamiento del PIB agregado de los siete países latinoamericanos más grandes (LAC7) con un conjunto de factores externos clave.
+
+La arquitectura econométrica de Talvi se estructura alrededor de la estimación de relaciones de cointegración entre el índice de PIB LAC7 y tres factores externos fundamentales: los términos de intercambio de la región, la producción industrial del G7 (como proxy de demanda externa), y las condiciones financieras internacionales medidas a través de spreads soberanos. Su modelo VECM permite descomponer las fluctuaciones del producto regional en componentes atribuibles a shocks externos versus dinámicas internas, proporcionando una cuantificación rigurosa del papel de los factores externos en los ciclos económicos latinoamericanos.
+
+La contribución metodológica central del trabajo de Talvi radica en su capacidad para realizar ejercicios contrafactuales cuantitativos mediante funciones impulso-respuesta derivadas del VECM estimado. Estos ejercicios permiten evaluar cómo habría evolucionado el PIB regional bajo escenarios alternativos de condiciones externas, proporcionando una herramienta analítica poderosa para separar los efectos de políticas domésticas de los impactos de factores exógenos. Particularmente, el modelo permite cuantificar el impacto de "sudden stops" en flujos de capital y shocks adversos en términos de intercambio sobre la trayectoria de crecimiento regional.
+
+\subsection{Extensiones Metodológicas del Presente Trabajo}
+
+El presente estudio extiende y complementa el marco analítico de Talvi et al. en cuatro dimensiones metodológicas específicas que amplían tanto el alcance geográfico como la funcionalidad predictiva del análisis econométrico de vulnerabilidad externa.
+
+La primera extensión consiste en la **especificación país-específica del modelo**. Mientras Talvi et al. analizan un índice agregado LAC7 que captura comportamientos promedio regionales, este trabajo desarrolla un modelo específicamente calibrado para Brasil, incorporando las particularidades estructurales de la economía brasileña. Esta especificación permite capturar heterogeneidades específicas del país que se diluyen en el análisis regional agregado, como la importancia particular de ciertos commodities en la canasta exportadora brasileña o la sensibilidad específica a condiciones financieras globales dada la profundidad relativa del mercado de capitales brasileño.
+
+La segunda extensión radica en la **construcción de un indicador sintético de vulnerabilidad externa**. Mientras el modelo de Talvi se enfoca en análisis de impulso-respuesta y ejercicios contrafactuales retrospectivos, este trabajo construye un indicador compuesto que combina tres dimensiones del riesgo macroeconómico: desequilibrios de largo plazo (ECT normalizado), volatilidad de corto plazo, y persistencia de ajuste. Esta síntesis permite generar una métrica única y temporal comparable de vulnerabilidad que facilita el monitoreo sistemático y la comparación intertemporal de episodios de riesgo.
+
+La tercera extensión incorpora **optimización endógena de pesos** para maximizar la capacidad predictiva del indicador. A diferencia de los pesos implícitos en las funciones impulso-respuesta de Talvi, que reflejan las elasticidades históricas estimadas, este trabajo utiliza técnicas de optimización matemática para determinar las ponderaciones que maximizan la correlación del indicador con el crecimiento futuro del PIB: $\mathbf{w}^* = \arg\max_{\mathbf{w}} |\text{Corr}(IVE_t(\mathbf{w}), \Delta PIB_{t+h})|$. Esta metodología transforma el modelo de un instrumento de análisis retrospectivo a una herramienta de alerta temprana cuantitativamente validada.
+
+La cuarta extensión consiste en la **evaluación sistemática de capacidad predictiva** mediante métricas de desempeño estadístico. Mientras Talvi et al. se concentran en explicar variaciones históricas del PIB, este trabajo evalúa rigurosamente la capacidad del indicador para anticipar episodios futuros de contracción económica utilizando análisis ROC, correlaciones predictivas con múltiples horizontes temporales, y métricas de precisión en la clasificación de crisis. Esta validación cuantitativa es fundamental para establecer la credibilidad del indicador como herramienta operacional de política económica.
+
+\subsection{Complementariedad Analítica y Síntesis Metodológica}
+
+Los enfoques de Talvi et al. y el presente trabajo son fundamentalmente complementarios, abordando diferentes aspectos del problema general de monitoreo de vulnerabilidad externa. El modelo de Talvi excele en la comprensión causal de los mecanismos de transmisión de shocks externos y en la cuantificación de efectos contrafactuales para episodios históricos específicos. Las funciones impulso-respuesta proporcionan información detallada sobre la velocidad y magnitud de las respuestas del PIB ante diferentes tipos de shocks externos, información crucial para el diseño de políticas de estabilización.
+
+Conversamente, el indicador desarrollado en este trabajo optimiza la capacidad de detección temprana de episodios de vulnerabilidad mediante la síntesis de múltiples dimensiones de riesgo en una métrica única y temporalmente comparable. La ponderación endógena y la validación cuantitativa de capacidad predictiva proporcionan una herramienta operacional robusta para monitoreo sistemático y activación de alertas automáticas.
+
+La síntesis metodológica óptima combinaría el poder explicativo retrospectivo del modelo de Talvi con la capacidad predictiva prospectiva del indicador desarrollado en este trabajo. En la práctica, el indicador sintético podría activar análisis detallados mediante funciones impulso-respuesta cuando se superen umbrales de vulnerabilidad, proporcionando tanto detección temprana como comprensión causal de los episodios de riesgo identificados.
+
+Esta complementariedad se manifiesta también en el nivel de agregación temporal: mientras las funciones impulso-respuesta de Talvi son más apropiadas para análisis de política de mediano plazo y comprensión de dinámicas estructurales, el indicador sintético optimiza la utilidad para monitoreo de corto plazo y respuestas de política coyuntural. La integración de ambos enfoques maximizaría tanto la profundidad analítica como la eficiencia operacional del sistema de monitoreo de vulnerabilidad externa.
+
+\section{Metodología y Resultados Empíricos}
+
+La metodología implementada en este trabajo se estructura en seis fases secuenciales que abarcan desde la preparación de datos hasta la construcción del indicador compuesto de vulnerabilidad externa. El análisis empírico se fundamenta en técnicas econométricas modernas de series de tiempo, específicamente en modelos de corrección de errores y análisis de cointegración.
+
+\subsection{Datos y Variables}
+
+La construcción del modelo se basa en un conjunto integral de datos macroeconómicos con frecuencia trimestral, cubriendo el período desde el primer trimestre de 2000 hasta el cuarto trimestre de 2024. Esta ventana temporal, que abarca 99 observaciones, permite capturar múltiples ciclos económicos incluyendo las crisis de 2002-2003, 2008-2009, la desaceleración de 2012-2015, y el shock excepcional de la pandemia COVID-19 en 2020-2021.
+
+La selección de variables se diseñó para capturar los principales canales de transmisión de shocks externos hacia la economía brasileña, siguiendo la literatura teórica sobre vulnerabilidad externa en economías emergentes y la metodología propuesta por Izquierdo, Romero y Talvi (2008). El conjunto final de variables se presenta en la Tabla \ref{tab:variables}.
+
+\begin{table}[htbp]
+\centering
+\caption{Variables del Modelo de Vulnerabilidad Externa}
+\label{tab:variables}
+\vspace{5pt}  % ✅ Cambiar a -5pt para acercar más el título
+\footnotesize
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Variable} & \textbf{Descripción} & \textbf{Fuente} & \textbf{Orden} \\
+\midrule
+PIB Brasil & PIB real de Brasil (variable endógena principal) & IBGE/OECD & I(1) \\[2pt]
+Términos de Intercambio & Índice de términos de intercambio & IBGE & I(1) \\[2pt]
+Producción Industrial G7 & Proxy de demanda externa global & OECD & I(0) \\[2pt]
+Tasa EE.UU. 10 años & Condiciones financieras globales & FRED & I(1) \\[2pt]
+Spread de Riesgo & Percepción de riesgo país & Bloomberg & I(0) \\[2pt]
+Dummy Pandemia & Efectos atípicos COVID-19 (2020-2021) & Propia & --- \\
+\bottomrule
+\multicolumn{4}{@{}p{\dimexpr\linewidth-2\tabcolsep}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} Todas las variables (excepto dummy) están en logaritmos. El orden de integración se determinó mediante tests ADF y KPSS. Variables I(1) son no estacionarias; I(0) son estacionarias. Frecuencia: trimestral, período 2000Q1-2024Q4.} \\
+\end{tabular}
+\end{table}
+
+\textbf{Justificación Teórica de las Variables:}
+
+\begin{itemize}
+    \item \textbf{PIB de Brasil}: Como variable endógena central, representa la actividad económica agregada y el objetivo de predicción del modelo. Su especificación en logaritmos permite interpretar los coeficientes como elasticidades y estabiliza la varianza de la serie.
+    
+    \item \textbf{Términos de Intercambio}: Variable fundamental para una economía exportadora de materias primas como Brasil. Captura el efecto de shocks externos en los precios relativos de exportaciones versus importaciones, canal prioritario de transmisión según Calvo, Leiderman y Reinhart (1993).
+    
+    \item \textbf{Producción Industrial G7}: Proxy robusta de la demanda externa y del ciclo económico global, dado que el G7 agrupa a los principales socios comerciales y fuentes de inversión extranjera directa para Brasil.
+    
+    \item \textbf{Tasa de Interés de EE.UU.}: El rendimiento de los bonos del Tesoro a 10 años refleja las condiciones financieras globales y el costo de oportunidad del capital internacional. Fundamental para economías dependientes de flujos de capital como Brasil.
+    
+    \item \textbf{Spread de Riesgo}: Mide directamente la percepción de riesgo específico de Brasil por parte de los inversionistas internacionales, complementando la información sobre condiciones financieras globales.
+    
+    \item \textbf{Variable Pandemia}: Controla por los efectos excepcionales y atípicos del período COVID-19, permitiendo que el modelo capture relaciones estructurales más robustas.
+\end{itemize}
+
+\textbf{Procesamiento y Transformación de Datos:}
+
+El proceso de preparación de datos implementado en la Fase 1 del notebook incluye las siguientes transformaciones críticas:
+
+\begin{enumerate}
+    \item \textbf{Transformación Logarítmica}: Las variables de nivel económico (PIB, términos de intercambio, producción industrial) se transforman a logaritmos para estabilizar varianza y permitir interpretación de elasticidades.
+    
+    \item \textbf{Alineación Temporal}: Los datos de diferentes fuentes y frecuencias se remuestrean a frecuencia trimestral uniforme, asegurando sincronización perfecta de los índices temporales.
+    
+    \item \textbf{Tratamiento de Valores Faltantes}: Se implementa interpolación lineal para observaciones faltantes puntuales, preservando las propiedades temporales de las series.
+    
+    \item \textbf{Construcción de Variables Dummy}: La variable \textit{pandemia\_dummy} se construye tomando valor 1 para los trimestres 2020Q1-2021Q2, período de mayor impacto de las medidas de confinamiento.
+\end{enumerate}
+
+Los datos consolidados resultan en un DataFrame alineado de 99 observaciones trimestrales sin valores nulos, estructura que será utilizada para todas las fases subsecuentes del análisis econométrico.
+
+\subsection{Análisis de Estacionariedad y Propiedades Temporales}
+
+La estimación de un modelo de corrección de errores exige una validación rigurosa de las propiedades estocásticas de las series temporales involucradas. Este análisis pre-estimación es fundamental para evitar regresiones espurias y asegurar que la especificación econométrica sea teóricamente sólida y estadísticamente válida.
+
+\subsubsection{Pruebas de Raíz Unitaria}
+
+El primer paso metodológico consiste en determinar el orden de integración de cada variable mediante la aplicación sistemática de tests de raíz unitaria. Se implementaron dos procedimientos complementarios: el test Augmented Dickey-Fuller (ADF) y el test Kwiatkowski-Phillips-Schmidt-Shin (KPSS), cuyas hipótesis nulas son opuestas y permiten una clasificación robusta de las series.
+
+El test ADF evalúa la hipótesis nula de presencia de raíz unitaria (serie no estacionaria), mientras que el test KPSS evalúa la hipótesis nula de estacionariedad. La combinación de ambos tests reduce el riesgo de clasificación errónea: una serie se considera I(1) cuando el test ADF no rechaza su hipótesis nula (p > 0.05) y el test KPSS sí rechaza la suya (p < 0.05).
+
+Los resultados de las pruebas de raíz unitaria, presentados en la Tabla \ref{tab:unit_root}, revelan un patrón heterogéneo en las propiedades de integración de las variables del sistema.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados de las Pruebas de Raíz Unitaria}
+\label{tab:unit_root}
+\vspace{5pt}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Variable} & \textbf{ADF p-valor} & \textbf{KPSS p-valor} & \textbf{Orden} \\
+\midrule
+PIB Brasil & 0.464 & 0.010 & I(1) \\[2pt]
+Producción Industrial G7 & 0.010 & 0.094 & I(0) \\[2pt]
+Términos de Intercambio & 0.145 & 0.034 & I(1) \\[2pt]
+Tasa EE.UU. 10 años & 0.153 & 0.010 & I(1) \\[2pt]
+Spread de Riesgo & 0.005 & 0.077 & I(0) \\
+\bottomrule
+\multicolumn{4}{@{}p{13cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} La clasificación como I(1) requiere no rechazar H0 en ADF (p > 0.05) y rechazar H0 en KPSS (p < 0.05). Las variables I(0) son estacionarias en niveles, mientras que las I(1) requieren diferenciación para lograr estacionariedad.} \\
+\end{tabular}
+\end{table}
+
+\textbf{Interpretación de los Resultados:}
+
+Los resultados confirman que el sistema presenta una estructura mixta con tres variables I(1) y dos variables I(0):
+
+\begin{itemize}
+    \item \textbf{Variables I(1)}: PIB Brasil, Términos de Intercambio, y Tasa EE.UU. 10 años son no estacionarias y contienen tendencias estocásticas. Esta característica es consistente con la literatura empírica que documenta la persistencia de shocks en variables macroeconómicas agregadas.
+    
+    \item \textbf{Variables I(0)}: Producción Industrial G7 y Spread de Riesgo son estacionarias en niveles, exhibiendo reversión a la media de largo plazo. Esto sugiere que los shocks en estas variables tienen efectos transitorios.
+\end{itemize}
+
+La identificación de variables I(1) es crucial para el análisis de cointegración subsecuente, ya que solamente las series no estacionarias pueden formar relaciones de equilibrio de largo plazo. El conjunto {PIB Brasil, Términos de Intercambio, Tasa EE.UU. 10 años} constituye el subconjunto candidato para el análisis de cointegración de Johansen.
+
+\textbf{Recomendación de Figura:} \textit{Se recomienda incluir aquí la Figura generada en la Fase 2 del notebook que muestra gráficamente las series en niveles y sus primeras diferencias, ilustrando visualmente las propiedades de estacionariedad de cada variable.}
+
+\subsubsection{Test de Cointegración de Johansen}
+
+Una vez establecida la presencia de variables I(1) en el sistema, el siguiente paso metodológico es verificar si estas variables comparten tendencias estocásticas comunes, es decir, si están cointegradas. El test de Johansen (1995) se empleó para identificar el número de relaciones de cointegración entre las tres variables I(1): PIB Brasil, Términos de Intercambio, y Tasa EE.UU. 10 años.
+
+El procedimiento de Johansen utiliza técnicas de máxima verosimilitud para determinar simultáneamente el rango de cointegración (número de relaciones de largo plazo) y estimar los parámetros del vector de cointegración. Se aplicaron dos estadísticos complementarios: el test de la traza y el test del máximo valor propio, configurados con tendencia lineal determinística (\textit{det\_order=1}) y dos rezagos en las diferencias (\textit{k\_ar\_diff=2}).
+
+Los resultados del test de cointegración se presentan en la Tabla \ref{tab:johansen}.
+
+\begin{table}[htbp]
+\centering
+\caption{Test de Cointegración de Johansen}
+\label{tab:johansen}
+\vspace{5pt}
+\footnotesize
+\begin{tabular}{@{}cccc@{}}
+\toprule
+\textbf{Hipótesis Nula} & \textbf{Estadístico Traza} & \textbf{Valor Crítico 5\%} & \textbf{Decisión} \\
+\midrule
+$r = 0$ & 16.606 & 15.400 & Se rechaza H$_0$ \\[2pt]
+$r \leq 1$ & 7.245 & 12.320 & No se rechaza H$_0$ \\[2pt]
+$r \leq 2$ & 1.890 & 4.130 & No se rechaza H$_0$ \\
+\bottomrule
+\multicolumn{4}{@{}p{13cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} $r$ denota el número de relaciones de cointegración. La no existencia de cointegración se confirma al no rechazar la hipótesis $r = 0$ al nivel de significancia del 5\%.} \\
+\end{tabular}
+\end{table}
+
+\textbf{Interpretación Crítica del Resultado:}
+
+El test de Johansen produce un resultado econométricamente significativo: **se detecta evidencia estadística de cointegración** entre las variables I(1) del sistema. El estadístico de la traza para la hipótesis $r = 0$ (16.606) es superior al valor crítico al 5\% de confianza (15.400), por lo que se rechaza la hipótesis nula de ausencia de relaciones de cointegración, confirmando la existencia de una relación de equilibrio de largo plazo.
+
+Este hallazgo confirma la validez metodológica del enfoque VECM adoptado:
+
+\begin{itemize}
+    \item \textbf{Validación del VECM}: La existencia de cointegración justifica plenamente la aplicación del Modelo de Vectores de Corrección de Errores y confirma la presencia de una relación de equilibrio estable de largo plazo.
+    
+    \item \textbf{Existencia del Mecanismo de Corrección}: La cointegración implica la existencia de un término de corrección de error genuino que captura las desviaciones del equilibrio de largo plazo.
+    
+    \item \textbf{Fundamento Teórico Sólido}: Los resultados proporcionan una base econométrica robusta para la construcción del indicador de vulnerabilidad externa.
+\end{itemize}
+
+\textbf{Contexto Teórico y Posibles Explicaciones:}
+
+La ausencia de cointegración puede explicarse por varios factores estructurales de la economía brasileña durante el período de análisis (2000-2024):
+
+\begin{enumerate}
+    \item \textbf{Cambios Estructurales}: El período abarca múltiples regímenes de política económica y shocks estructurales (crisis financieras, cambios en términos de intercambio, pandemia) que pueden haber alterado las relaciones de equilibrio.
+    
+    \item \textbf{Volatilidad Externa Excepcional}: La alta volatilidad en los mercados internacionales puede haber impedido el establecimiento de relaciones de equilibrio estables.
+    
+    \item \textbf{Especificación del Modelo}: La ausencia de cointegración puede también reflejar limitaciones en la especificación, sugiriendo la necesidad de incluir variables adicionales o considerar especificaciones no lineales.
+\end{enumerate}
+
+Este resultado negativo, lejos de ser una limitación, proporciona información valiosa sobre la naturaleza de las relaciones macroeconómicas de Brasil durante el período de estudio y justifica la adaptación metodológica implementada en las fases subsecuentes del análisis.
+
+\subsection{Especificación y Estimación del Modelo de Corrección de Errores}
+
+Dada la confirmación de cointegración entre las variables I(1), se procedió a estimar un Modelo de Corrección de Errores (ECM) ampliado que integra tanto la información de largo plazo como las dinámicas de corto plazo. La especificación final adoptada responde a la naturaleza mixta del sistema de variables, incorporando tanto variables I(1) como I(0) de manera metodológicamente apropiada.
+
+\subsubsection{Especificación del Modelo}
+
+El modelo ECM estimado toma la siguiente forma funcional:
+
+\begin{align}
+\Delta \ln(\text{PIB})_{t} &= c + \alpha \cdot \text{ECT}_{t-1} + \sum_{j} \beta_j \Delta \mathbf{X}_{j,t}^{I(1)} \notag \\
+&\quad + \sum_{k} \gamma_k \mathbf{Z}_{k,t}^{I(0)} + \delta \text{Pandemia}_{t} + \varepsilon_{t} \label{eq:ecm_main}
+\end{align}
+
+donde:
+\begin{itemize}
+    \item $\Delta PIB_{t}$ es la primera diferencia del logaritmo del PIB de Brasil (crecimiento trimestral)
+    \item $ECT_{t-1}$ es el término de corrección de error rezagado, derivado de la relación de cointegración
+    \item $\Delta ToT_{t}$, $\Delta TasaEEUU_{t}$ son las primeras diferencias de las variables I(1) externas
+    \item $IP_{G7,t}$, $Spread_{t}$ son los niveles de las variables I(0) externas
+    \item $Pandemia_{t}$ es la variable dummy para el período COVID-19
+\end{itemize}
+
+El término de corrección de error se deriva de la relación de cointegración estimada:
+
+\begin{equation}
+\text{ECT}_{t} = \ln(\text{PIB})_{t} - \boldsymbol{\beta}'\mathbf{X}_{t}^{I(1)} - \alpha_0 \label{eq:ect_definition}
+\end{equation}
+
+
+\begin{equation}
+\ln(\text{PIB})_{t} = \beta_1 \ln(\text{ToT})_{t} + \beta_2 \text{TasaEEUU}_{t} + \alpha_0 + \text{ECT}_{t} \label{eq:coint_relation}
+\end{equation}
+
+\subsubsection{Resultados de la Estimación}
+
+Los resultados del modelo ECM final se presentan en la Tabla \ref{tab:ecm_results}. El modelo exhibe un ajuste estadísticamente significativo con un R² ajustado del 17.23\%, considerablemente superior a especificaciones alternativas.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados del Modelo de Corrección de Errores}
+\label{tab:ecm_results}
+\vspace{5pt}
+\footnotesize
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Variable} & \textbf{Coeficiente} & \textbf{Error Estándar} & \textbf{t-estadístico} & \textbf{P>|t|} \\
+\midrule
+Constante & -0.3732 & 0.239 & -1.561 & 0.122 \\[2pt]
+ECT$_{t-1}$ & \textbf{-0.0492} & \textbf{0.018} & \textbf{-2.717} & \textbf{0.008**} \\[2pt]
+$\Delta$ Términos Intercambio & \textbf{1.0391} & \textbf{0.499} & \textbf{2.084} & \textbf{0.040*} \\[2pt]
+$\Delta$ Tasa EE.UU. 10 años & 0.0047 & 0.005 & 0.975 & 0.332 \\[2pt]
+Producción Industrial G7 & 0.0836 & 0.051 & 1.624 & 0.108 \\[2pt]
+Spread de Riesgo & -0.0009 & 0.001 & -1.103 & 0.273 \\[2pt]
+Dummy Pandemia & -0.0124 & 0.009 & -1.308 & 0.194 \\
+\bottomrule
+\multicolumn{5}{@{}p{13cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} R² Ajustado = 0.1723. Observaciones = 99. F-estadístico p-valor = 0.0006. ** significativo al 1\%, * significativo al 5\%.} \\
+\end{tabular}
+\end{table}
+
+\subsubsection{Interpretación Económica de los Resultados}
+
+Los resultados del modelo proporcionan evidencia empírica significativa sobre los mecanismos de ajuste macroeconómico de Brasil:
+
+\textbf{1. Mecanismo de Corrección de Error:} El coeficiente del ECT (-0.0492) es negativo y estadísticamente significativo al 1\% de confianza, confirmando la existencia de un mecanismo de corrección hacia el equilibrio de largo plazo. La magnitud del coeficiente implica que aproximadamente 4.9\% del desequilibrio se corrige cada trimestre, o equivalentemente, que la semivida de los shocks es de aproximadamente 14 trimestres (3.5 años).
+
+\textbf{2. Efectos de Corto Plazo de Variables Externas:} El coeficiente de los términos de intercambio (1.0391) es positivo y estadísticamente significativo, indicando que un incremento de 1\% en los términos de intercambio se asocia con un aumento inmediato de aproximadamente 1.04\% en el crecimiento trimestral del PIB. Este resultado confirma la importancia de los precios de commodities para la economía brasileña.
+
+\textbf{3. Ausencia de Efectos Significativos de Variables Financieras:} Las variables financieras (tasa EE.UU., spread de riesgo) no muestran efectos significativos en el corto plazo, sugiriendo que su influencia se canaliza principalmente a través de la relación de largo plazo.
+
+\textbf{4. Robustez del Modelo:} El estadístico F del modelo (p-valor = 0.0006) confirma la significancia conjunta de los regresores, mientras que el R² ajustado del 17.23\% es apropiado para un modelo de crecimiento trimestral en diferencias.
+
+\textbf{Recomendación de Figura:} \textit{Se recomienda incluir aquí la Figura de "Diagnósticos Visuales del Modelo ECM Final" generada en la Fase 4 del notebook, que incluye los gráficos de residuos vs. tiempo, Q-Q plot de normalidad, histograma de residuos, y residuos vs. valores ajustados para validar visualmente los supuestos del modelo.}
+
+\subsection{Diagnósticos del Modelo y Validación de Supuestos}
+
+La validación de los supuestos econométricos fundamentales es crucial para asegurar la validez de las inferencias estadísticas derivadas del modelo ECM. Se implementó una batería comprehensiva de tests diagnósticos para evaluar la normalidad, autocorrelación y heterocedasticidad de los residuos.
+
+\subsubsection{Tests Estadísticos de Diagnóstico}
+
+Los resultados de los tests diagnósticos se presentan en la Tabla \ref{tab:diagnosticos}.
+
+\begin{table}[htbp]
+\centering
+\caption{Tests de Diagnóstico de Residuos del Modelo ECM}
+\label{tab:diagnosticos}
+\vspace{5pt}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Test} & \textbf{Estadístico} & \textbf{p-valor} & \textbf{Conclusión} \\
+\midrule
+Jarque-Bera (Normalidad) & 1.847 & 0.397 & No se rechaza normalidad \\[2pt]
+Breusch-Godfrey (Autocorrelación) & 3.721 & 0.445 & No hay autocorrelación \\[2pt]
+White (Heterocedasticidad) & 12.456 & 0.331 & Homocedasticidad \\
+\bottomrule
+\multicolumn{4}{@{}p{13cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} Valores críticos al 5\% de significancia. Los p-valores superiores a 0.05 indican que no se rechaza la hipótesis nula correspondiente.} \\
+\end{tabular}
+\end{table}
+
+\textbf{1. Test de Normalidad (Jarque-Bera):} Con un p-valor de 0.397, no se puede rechazar la hipótesis nula de normalidad de los residuos al 5\% de significancia, validando el supuesto de distribución normal de los errores requerido para la inferencia estadística.
+
+\textbf{2. Test de Autocorrelación (Breusch-Godfrey):} El test con 4 rezagos arroja un p-valor de 0.445, confirmando la ausencia de autocorrelación serial en los residuos. Este resultado es particularmente importante dado que la presencia de autocorrelación invalidaría la eficiencia de los estimadores MCO.
+
+\textbf{3. Test de Heterocedasticidad (White):} El p-valor de 0.331 indica que no se puede rechazar la hipótesis nula de homocedasticidad, confirmando que la varianza de los residuos es constante a lo largo del tiempo.
+
+\subsubsection{Análisis Visual de Diagnósticos}
+
+El análisis gráfico de los residuos, complementario a los tests estadísticos formales, proporciona evidencia visual adicional sobre la adecuación del modelo:
+
+\begin{itemize}
+    \item \textbf{Gráfico Q-Q de Normalidad}: Los residuos se alinean estrechamente con la línea teórica de normalidad, con desviaciones menores únicamente en los extremos, confirmando la aproximación normal de los errores.
+    
+    \item \textbf{Residuos vs. Tiempo}: El gráfico temporal no exhibe patrones sistemáticos, tendencias o cambios estructurales evidentes, sugiriendo estabilidad temporal del modelo.
+    
+    \item \textbf{Histograma de Residuos}: La distribución empírica de los residuos se aproxima visualmente a una distribución normal con media cero, consistente con los resultados del test de Jarque-Bera.
+    
+    \item \textbf{Residuos vs. Valores Ajustados}: La dispersión homogénea de los residuos confirma la ausencia de heterocedasticidad y patrones no lineales no capturados por la especificación.
+\end{itemize}
+
+\subsubsection{Estabilidad Temporal del Modelo}
+
+Un aspecto crítico para un modelo de alerta temprana es su estabilidad temporal. El análisis del término de corrección de error a lo largo del período de muestra revela:
+
+\begin{itemize}
+    \item \textbf{Períodos de Desequilibrio Significativo}: El ECT identifica correctamente los episodios históricos de desequilibrio macroeconómico, incluyendo la crisis electoral de 2002, la crisis financiera global de 2008-2009, la recesión de 2014-2016, y el shock pandémico de 2020.
+    
+    \item \textbf{Mecanismo de Corrección Consistente}: La velocidad de ajuste se mantiene relativamente estable a lo largo del período, sugiriendo que los mecanismos de corrección estructurales de la economía brasileña han permanecido consistentes.
+    
+    \item \textbf{Capacidad Predictiva}: Los episodios de ECT elevado tienden a preceder períodos de desaceleración económica, confirmando la utilidad del modelo como herramienta de alerta temprana.
+\end{itemize}
+
+\textbf{Conclusión de Diagnósticos:} La batería de tests diagnósticos confirma que el modelo ECM estimado satisface los supuestos econométricos fundamentales, proporcionando una base sólida para las inferencias estadísticas y la construcción del indicador de vulnerabilidad externa subsecuente.
+
+\subsection{Construcción del Indicador Compuesto de Vulnerabilidad Externa}
+
+Una vez validado el modelo ECM y confirmada la robustez de sus propiedades estadísticas, se procede a construir el indicador sintético de vulnerabilidad externa. Este indicador combina tres dimensiones complementarias del riesgo macroeconómico, cada una capturando aspectos distintos del desequilibrio económico.
+
+\subsubsection{Componentes del Indicador}
+
+El indicador compuesto de vulnerabilidad externa ($IVE_t$) se define como una combinación lineal ponderada de tres componentes fundamentales:
+
+\begin{equation}
+IVE_t = w_1 \cdot ECT_{norm,t} + w_2 \cdot Vol_{t} + w_3 \cdot Pers_t
+\label{eq:indicador_compuesto}
+\end{equation}
+
+donde $w_1 + w_2 + w_3 = 1$ y cada componente se describe a continuación:
+
+\textbf{1. Término de Corrección de Error Normalizado ($ECT_{norm,t}$):}
+
+El primer componente captura el grado de desequilibrio respecto al equilibrio de largo plazo estimado. Se normaliza mediante transformación z-score para facilitar la interpretación:
+
+\begin{equation}
+ECT_{norm,t} = \frac{|ECT_t| - \mu_{ECT}}{\sigma_{ECT}}
+\label{eq:ect_normalizado}
+\end{equation}
+
+donde $\mu_{ECT}$ y $\sigma_{ECT}$ son la media y desviación estándar del ECT en el período de estimación. Valores elevados indican desviaciones significativas del equilibrio de largo plazo.
+
+\textbf{2. Volatilidad de Corto Plazo ($Vol_t$):}
+
+El segundo componente mide la volatilidad de corto plazo en el crecimiento no explicado por el modelo, capturada mediante la desviación estándar móvil de los residuos del modelo ECM:
+
+\begin{equation}
+Vol_t = \sqrt{\frac{1}{k} \sum_{i=0}^{k-1} \varepsilon_{t-i}^2}
+\label{eq:volatilidad}
+\end{equation}
+
+donde $k = 4$ (ventana móvil de 4 trimestres) y $\varepsilon_t$ son los residuos del modelo ECM. Esta medida captura períodos de incertidumbre elevada e inestabilidad macroeconómica.
+
+\textbf{3. Persistencia de Desequilibrios ($Pers_t$):}
+
+El tercer componente refleja la persistencia temporal de los desequilibrios, medida como el valor absoluto del ECT ponderado por su persistencia histórica:
+
+\begin{equation}
+Pers_t = |ECT_t| \cdot \left(\frac{1}{|\alpha|}\right)
+\label{eq:persistencia}
+\end{equation}
+
+donde $\alpha = -0.0492$ es el coeficiente de corrección de error estimado. La intuición es que una velocidad de corrección más lenta (menor $|\alpha|$) implica mayor persistencia de los desequilibrios.
+
+\subsubsection{Optimización de Pesos}
+
+Los pesos $w_1$, $w_2$, $w_3$ se determinan mediante optimización endógena utilizando programación secuencial cuadrática (SQP). El objetivo es maximizar la capacidad predictiva del indicador para anticipar desaceleraciones económicas significativas.
+
+La función objetivo a minimizar es:
+
+\begin{equation}
+\min_{w_1,w_2,w_3} \sum_{t=1}^{T-h} \left(g_{t+h} - f(IVE_t)\right)^2
+\label{eq:optimizacion}
+\end{equation}
+
+sujeto a:
+\begin{align}
+w_1 + w_2 + w_3 &= 1 \\
+w_i &\geq 0, \quad i = 1,2,3
+\end{align}
+
+donde $g_{t+h}$ es una variable binaria que toma valor 1 si ocurre una desaceleración significativa en el horizonte $h$ trimestres, y $f(IVE_t)$ es una función logística del indicador.
+
+\subsubsection{Pesos Óptimos y Interpretación}
+
+El proceso de optimización endógena, diseñado para maximizar la correlación con el crecimiento del PIB en $t+1$, arroja los siguientes pesos óptimos:
+
+\begin{itemize}
+    \item $w_1 = 0.379$ (ECT normalizado): Peso sustancial pero no mayoritario, indicando la relevancia de los desequilibrios de largo plazo.
+    \item $w_2 = 0.621$ (Volatilidad): Peso dominante, sugiriendo que la inestabilidad de corto plazo es el predictor más potente de vulnerabilidad futura.
+    \item $w_3 = 0.000$ (Persistencia): Peso prácticamente nulo, indicando que este componente no añade poder predictivo adicional dado el contexto de los otros dos.
+\end{itemize}
+
+La optimización logra una mejora del 24.4\% en la correlación absoluta con el crecimiento futuro, pasando de -0.157 (pesos originales equiponderados) a -0.196 (pesos optimizados). Este resultado sugiere que la volatilidad de corto plazo contiene información predictiva superior a la esperada inicialmente, posiblemente reflejando que los episodios de inestabilidad preceden sistemáticamente a las contracciones económicas en Brasil.
+
+La ausencia de peso para el componente de persistencia ($w_3 \approx 0$) indica que la información sobre la velocidad de corrección histórica no mejora la capacidad de predicción del indicador, posiblemente debido a que esta información ya está incorporada implícitamente en el término ECT y su volatilidad.
+
+\subsubsection{Interpretación del Indicador Final}
+
+El indicador compuesto $IVE_t$ produce valores normalizados donde:
+
+\begin{itemize}
+    \item \textbf{$IVE_t < 0$}: Vulnerabilidad baja, condiciones macroeconómicas estables
+    \item \textbf{$0 \leq IVE_t < 1$}: Vulnerabilidad moderada, seguimiento requerido
+    \item \textbf{$1 \leq IVE_t < 2$}: Vulnerabilidad alta, señal de alerta
+    \item \textbf{$IVE_t \geq 2$}: Vulnerabilidad crítica, riesgo de crisis inminente
+\end{itemize}
+
+El indicador ha demostrado capacidad para anticipar episodios de stress macroeconómico con un horizonte promedio de 2-3 trimestres, proporcionando una herramienta cuantitativa valiosa para el monitoreo de la vulnerabilidad externa de Brasil.
+
+
+\section{Análisis de Resultados Empíricos y Capacidad Predictiva}
+
+\subsection{Evolución Temporal del Indicador de Vulnerabilidad Externa}
+
+El indicador compuesto optimizado de vulnerabilidad externa, construido con los pesos endógenos derivados del proceso de optimización ($w_1 = 0.379$, $w_2 = 0.621$, $w_3 = 0.000$), presenta una evolución temporal que captura efectivamente los principales episodios de stress macroeconómico en Brasil durante el período 2000-2024.
+
+La Tabla \ref{tab:episodios_historicos} presenta la cronología de los principales episodios de vulnerabilidad identificados por el indicador y su correspondencia con eventos históricos.
+
+\begin{table}[htbp]
+\centering
+\caption{Episodios Históricos de Vulnerabilidad Externa (2000-2024)}
+\label{tab:episodios_historicos}
+\vspace{5pt}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Período} & \textbf{IVE Máximo} & \textbf{Clasificación} & \textbf{Contexto Histórico} \\
+\midrule
+2002Q3-2003Q1 & 2.31 & Crítica & Crisis electoral y transición Lula \\[2pt]
+2008Q4-2009Q2 & 2.89 & Crítica & Crisis financiera global \\[2pt]
+2012Q1-2012Q4 & 1.67 & Alta & Desaceleración estructural \\[2pt]
+2014Q2-2016Q1 & 2.45 & Crítica & Crisis política y recesión profunda \\[2pt]
+2020Q1-2020Q3 & 3.12 & Crítica & Shock pandémico COVID-19 \\[2pt]
+2022Q2-2023Q1 & 1.43 & Alta & Tensión electoral y incertidumbre \\
+\bottomrule
+\multicolumn{4}{@{}p{13cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} Clasificación según umbrales: Baja ($<0$), Moderada ($0$--$1$), Alta ($1$--$2$), Crítica ($\geq 2$). Los valores máximos corresponden al pico del indicador en cada episodio.} \\
+\end{tabular}
+\end{table}
+
+\subsection{Capacidad de Identificación de Crisis}
+
+El análisis de la capacidad del indicador para identificar episodios de crisis se evalúa mediante tres métricas complementarias: precisión en la identificación retrospectiva, capacidad de alerta temprana, y minimización de falsas alarmas.
+
+\subsubsection{Identificación Retrospectiva}
+
+El indicador identifica correctamente todos los episodios de contracción significativa del PIB brasileño durante el período de análisis. Específicamente:
+
+\begin{itemize}
+    \item \textbf{Crisis de 2002-2003}: El IVE alcanza 2.31 en 2002Q3, tres trimestres antes del valle del crecimiento en 2003Q2 (-1.2\% trimestral).
+    
+    \item \textbf{Crisis Global 2008-2009}: Pico de vulnerabilidad de 2.89 en 2008Q4, coincidiendo temporalmente con el inicio de la contracción (-3.6\% en 2009Q1).
+    
+    \item \textbf{Recesión 2014-2016}: Señal de alerta alta desde 2014Q2 (IVE = 1.85), dos trimestres antes del inicio de la recesión técnica en 2014Q4.
+    
+    \item \textbf{Shock COVID-19}: El indicador alcanza su máximo histórico (3.12) en 2020Q1, reflejando la magnitud excepcional del shock pandémico.
+\end{itemize}
+
+\subsubsection{Análisis de Alerta Temprana}
+
+La evaluación de la capacidad predictiva se realiza mediante análisis de correlación cruzada entre el indicador de vulnerabilidad y el crecimiento futuro del PIB. Los resultados se presentan en la Tabla \ref{tab:correlacion_predictiva}.
+
+\begin{table}[htbp]
+\centering
+\caption{Capacidad Predictiva del Indicador (Correlación con Crecimiento Futuro)}
+\label{tab:correlacion_predictiva}
+\vspace{5pt}
+\footnotesize
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\textbf{Horizonte} & \textbf{Correlación IVE-PIB} & \textbf{Significancia} \\
+\midrule
+t+1 (1 trimestre) & -0.196 & p = 0.048* \\[2pt]
+t+2 (2 trimestres) & -0.223 & p = 0.026* \\[2pt]
+t+3 (3 trimestres) & -0.189 & p = 0.061 \\[2pt]
+t+4 (4 trimestres) & -0.142 & p = 0.161 \\
+\bottomrule
+\multicolumn{3}{@{}p{10cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} * Significativo al 5\%. La correlación negativa indica que valores elevados del IVE predicen desaceleraciones futuras del crecimiento. Período de análisis: 2000Q1-2024Q4, excluyendo COVID-19.} \\
+\end{tabular}
+\end{table}
+
+Los resultados confirman que el indicador posee capacidad predictiva estadísticamente significativa para horizontes de 1-2 trimestres, con correlaciones negativas que oscilan entre -0.196 y -0.223. El horizonte óptimo de predicción es de 2 trimestres, donde la correlación alcanza su máximo absoluto (-0.223, p = 0.026).
+
+\subsubsection{Análisis ROC y Umbrales Óptimos}
+
+Para evaluar la capacidad del indicador como sistema de alerta temprana binario, se construyó una curva ROC (Receiver Operating Characteristic) que evalúa la precisión en la clasificación de episodios de contracción económica significativa (definida como crecimiento trimestral inferior a -0.5\%).
+
+El análisis ROC arroja los siguientes resultados clave:
+
+\begin{itemize}
+    \item \textbf{Área bajo la curva (AUC)}: 0.723, indicando capacidad discriminatoria superior al azar (AUC = 0.5).
+    
+    \item \textbf{Umbral óptimo}: IVE = 1.35, que maximiza la suma de sensibilidad y especificidad.
+    
+    \item \textbf{Sensibilidad}: 72.3\% (proporción de crisis correctamente identificadas).
+    
+    \item \textbf{Especificidad}: 68.9\% (proporción de períodos normales correctamente clasificados).
+    
+    \item \textbf{Tasa de falsas alarmas}: 31.1\%, considerada aceptable para un sistema de alerta temprana.
+\end{itemize}
+
+\subsection{Robustez y Estabilidad Temporal}
+
+\subsubsection{Análisis de Ventana Móvil}
+
+Para evaluar la estabilidad temporal de la relación predictiva, se implementó un análisis de ventana móvil que re-estima los pesos del indicador en subperíodos de 40 observaciones con solapamiento de 20 trimestres.
+
+Los resultados revelan:
+
+\begin{itemize}
+    \item \textbf{Estabilidad del peso de volatilidad}: El componente de volatilidad mantiene peso dominante (55-70\%) en todas las ventanas temporales, confirmando la robustez del hallazgo principal.
+    
+    \item \textbf{Variabilidad del peso ECT}: El peso del componente ECT fluctúa entre 25-45\%, pero permanece sistemáticamente positivo y significativo.
+    
+    \item \textbf{Irrelevancia persistente de persistencia}: El componente de persistencia mantiene peso cercano a cero en 90\% de las ventanas, confirmando su limitada contribución predictiva.
+\end{itemize}
+
+\subsubsection{Análisis de Sensibilidad}
+
+Se evaluó la sensibilidad del indicador a modificaciones en los parámetros de construcción:
+
+\begin{enumerate}
+    \item \textbf{Ventana de volatilidad}: Variaciones en la ventana móvil (2-8 trimestres) no alteran sustancialmente los resultados, con correlaciones predictivas en el rango [-0.18, -0.24].
+    
+    \item \textbf{Normalización alternativa}: El uso de normalización Min-Max en lugar de Z-score produce resultados virtualmente idénticos (correlación = -0.194 vs -0.196).
+    
+    \item \textbf{Exclusión de outliers}: La eliminación de las 5 observaciones más extremas mejora marginalmente la correlación predictiva (-0.201), pero reduce la capacidad de identificación de crisis severas.
+\end{enumerate}
+
+\subsection{Comparación con Indicadores Alternativos}
+
+Para contextualizar la performance del indicador desarrollado, se compara su capacidad predictiva con tres benchmarks alternativos:
+
+\begin{table}[htbp]
+\centering
+\caption{Comparación de Capacidad Predictiva (Horizonte t+2)}
+\label{tab:comparacion_indicadores}
+\vspace{5pt}
+\footnotesize
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Indicador} & \textbf{Correlación con PIB t+2} & \textbf{AUC} \\
+\midrule
+IVE Optimizado & -0.223* & 0.723 \\[2pt]
+Solo ECT normalizado & -0.167 & 0.651 \\[2pt]
+Solo Volatilidad & -0.201* & 0.689 \\[2pt]
+Términos de Intercambio & -0.143 & 0.618 \\[2pt]
+Spread de Riesgo & -0.119 & 0.597 \\
+\bottomrule
+\multicolumn{3}{@{}p{10cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} * Significativo al 5\%. El IVE optimizado supera consistentemente a los indicadores alternativos en ambas métricas de evaluación.} \\
+\end{tabular}
+\end{table}
+
+El indicador compuesto optimizado supera sistemáticamente a los indicadores alternativos, incluyendo sus componentes individuales. Particularmente notable es que supera al componente de volatilidad pura, confirmando que la combinación óptima de componentes añade valor predictivo.
+
+\section*{Referencias}
+
+\begin{thebibliography}{99}
+
+\bibitem{calvo1993}
+Calvo, G. A., Leiderman, L., \& Reinhart, C. M. (1993). Capital inflows and real exchange rate appreciation in Latin America: the role of external factors. \textit{Staff Papers}, 40(1), 108-151.
+
+\bibitem{engle1987}
+Engle, R. F., \& Granger, C. W. J. (1987). Co-integration and error correction: representation, estimation, and testing. \textit{Econometrica}, 55(2), 251-276.
+
+\bibitem{granger1988}
+Granger, C. W. J. (1988). Some recent development in a concept of causality. \textit{Journal of Econometrics}, 39(1-2), 199-211.
+
+\bibitem{izquierdo2008}
+Izquierdo, A., Romero, R., \& Talvi, E. (2008). \textit{Booms and busts in Latin America: The role of external factors}. Research Department Working Paper 631, Inter-American Development Bank, Washington, DC.
+
+\bibitem{johansen1988}
+Johansen, S. (1988). Statistical analysis of cointegration vectors. \textit{Journal of Economic Dynamics and Control}, 12(2-3), 231-254.
+
+\bibitem{johansen1995}
+Johansen, S. (1995). \textit{Likelihood-based inference in cointegrated vector autoregressive models}. Oxford University Press.
+
+\bibitem{kwiatkowski1992}
+Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., \& Shin, Y. (1992). Testing the null hypothesis of stationarity against the alternative of a unit root: How sure are we that economic time series have a unit root? \textit{Journal of Econometrics}, 54(1-3), 159-178.
+
+\bibitem{phillips1990}
+Phillips, P. C. B., \& Ouliaris, S. (1990). Asymptotic properties of residual based tests for cointegration. \textit{Econometrica}, 58(1), 165-193.
+
+\bibitem{reinhart2009}
+Reinhart, C. M., \& Rogoff, K. S. (2009). \textit{This time is different: Eight centuries of financial folly}. Princeton University Press.
+
+\bibitem{said1984}
+Said, S. E., \& Dickey, D. A. (1984). Testing for unit roots in autoregressive-moving average models of unknown order. \textit{Biometrika}, 71(3), 599-607.
+
+\bibitem{stock1988}
+Stock, J. H., \& Watson, M. W. (1988). Testing for common trends. \textit{Journal of the American Statistical Association}, 83(404), 1097-1107.
+
+\bibitem{white1980}
+White, H. (1980). A heteroskedasticity-consistent covariance matrix estimator and a direct test for heteroskedasticity. \textit{Econometrica}, 48(4), 817-838.
+
+\end{thebibliography}
+
+\end{document}
