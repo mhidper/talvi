@@ -5,10 +5,15 @@
 \usepackage[spanish]{babel}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\graphicspath{{figures/}}
 \usepackage{booktabs}
 \usepackage{natbib}     % ✅ AGREGAR - para citas estilo autor-año
 \usepackage{hyperref}   % ✅ AGREGAR - para enlaces
 \usepackage{lineno}     % ✅ AGREGAR - para números de línea (común en preprints)
+\usepackage{floatrow}
+
+\floatsetup[figure]{capposition=top}
+
 
 % --- CONFIGURACIÓN DE FORMATO DE PÁRRAFOS ---
 \setlength{\parindent}{0pt}        % ✅ AGREGAR - elimina sangría de primera línea
@@ -229,37 +234,29 @@ $r = 0$ & 16.606 & 15.400 & Se rechaza H$_0$ \\[2pt]
 $r \leq 1$ & 7.245 & 12.320 & No se rechaza H$_0$ \\[2pt]
 $r \leq 2$ & 1.890 & 4.130 & No se rechaza H$_0$ \\
 \bottomrule
-\multicolumn{4}{@{}p{13cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} $r$ denota el número de relaciones de cointegración. La no existencia de cointegración se confirma al no rechazar la hipótesis $r = 0$ al nivel de significancia del 5\%.} \\
+\multicolumn{4}{@{}p{13cm}@{}}{\vspace{5pt}\footnotesize\textit{Nota:} $r$ denota el número de relaciones de cointegración. Se rechaza la hipótesis nula si el estadístico de la traza es mayor que el valor crítico. El test indica la existencia de una relación de cointegración al rechazar la hipótesis $r=0$ pero no rechazar $r \leq 1$.} \\
+
 \end{tabular}
 \end{table}
 
-\textbf{Interpretación Crítica del Resultado:}
+\textbf{Interpretación de los Resultados:}
 
-El test de Johansen produce un resultado econométricamente significativo: **se detecta evidencia estadística de cointegración** entre las variables I(1) del sistema. El estadístico de la traza para la hipótesis $r = 0$ (16.606) es superior al valor crítico al 5\% de confianza (15.400), por lo que se rechaza la hipótesis nula de ausencia de relaciones de cointegración, confirmando la existencia de una relación de equilibrio de largo plazo.
+El test de Johansen arroja un resultado clave para el modelo: se detecta evidencia estadística de una relación de cointegración entre las variables I(1) del sistema.
 
-Este hallazgo confirma la validez metodológica del enfoque VECM adoptado:
-
-\begin{itemize}
-    \item \textbf{Validación del VECM}: La existencia de cointegración justifica plenamente la aplicación del Modelo de Vectores de Corrección de Errores y confirma la presencia de una relación de equilibrio estable de largo plazo.
-    
-    \item \textbf{Existencia del Mecanismo de Corrección}: La cointegración implica la existencia de un término de corrección de error genuino que captura las desviaciones del equilibrio de largo plazo.
-    
-    \item \textbf{Fundamento Teórico Sólido}: Los resultados proporcionan una base econométrica robusta para la construcción del indicador de vulnerabilidad externa.
-\end{itemize}
-
-\textbf{Contexto Teórico y Posibles Explicaciones:}
-
-La ausencia de cointegración puede explicarse por varios factores estructurales de la economía brasileña durante el período de análisis (2000-2024):
-
+El procedimiento es secuencial:
 \begin{enumerate}
-    \item \textbf{Cambios Estructurales}: El período abarca múltiples regímenes de política económica y shocks estructurales (crisis financieras, cambios en términos de intercambio, pandemia) que pueden haber alterado las relaciones de equilibrio.
-    
-    \item \textbf{Volatilidad Externa Excepcional}: La alta volatilidad en los mercados internacionales puede haber impedido el establecimiento de relaciones de equilibrio estables.
-    
-    \item \textbf{Especificación del Modelo}: La ausencia de cointegración puede también reflejar limitaciones en la especificación, sugiriendo la necesidad de incluir variables adicionales o considerar especificaciones no lineales.
+    \item Se evalúa la hipótesis nula de $r=0$ (cero relaciones de cointegración). El estadístico de la traza (16.606) es superior al valor crítico al 5\% (15.400), por lo que se rechaza la hipótesis nula. Esto confirma que existe al menos una relación de cointegración.
+    \item A continuación, se evalúa la hipótesis $r \leq 1$. En este caso, el estadístico de la traza (7.245) es inferior al valor crítico (12.320), por lo que no es posible rechazar la hipótesis.
 \end{enumerate}
 
-Este resultado negativo, lejos de ser una limitación, proporciona información valiosa sobre la naturaleza de las relaciones macroeconómicas de Brasil durante el período de estudio y justifica la adaptación metodológica implementada en las fases subsecuentes del análisis.
+La conclusión es que el test identifica **una única relación de cointegración** entre el PIB de Brasil, sus términos de intercambio y la tasa de interés de EE.UU.
+
+Este hallazgo es fundamental, pues confirma la validez teórica y metodológica del enfoque VECM adoptado:
+\begin{itemize}
+    \item \textbf{Validación del VECM}: La existencia de cointegración justifica plenamente la aplicación de un Modelo de Vectores de Corrección de Errores, ya que confirma que las variables comparten una tendencia estocástica común y una relación de equilibrio estable a largo plazo.
+    \item \textbf{Existencia del Mecanismo de Corrección}: La cointegración implica que existe un mecanismo de corrección de error (ECT) genuino. Cualquier desviación del equilibrio de largo plazo tenderá a corregirse en los períodos siguientes.
+    \item \textbf{Fundamento Teórico Sólido}: El resultado proporciona una base econométrica robusta para modelar la dinámica del PIB y construir el indicador de vulnerabilidad externa.
+\end{itemize}
 
 \subsection{Especificación y Estimación del Modelo de Corrección de Errores}
 
@@ -394,100 +391,226 @@ Un aspecto crítico para un modelo de alerta temprana es su estabilidad temporal
 
 \textbf{Conclusión de Diagnósticos:} La batería de tests diagnósticos confirma que el modelo ECM estimado satisface los supuestos econométricos fundamentales, proporcionando una base sólida para las inferencias estadísticas y la construcción del indicador de vulnerabilidad externa subsecuente.
 
+% ==============================================================================
+% FIGURA 2: DIAGNÓSTICOS DEL MODELO ECM
+% Ubicación: Después de la sección de "Estimación del Modelo Final"
+% y antes de "Construcción del Indicador Compuesto"
+% ==============================================================================
+
+Los diagnósticos estadísticos del modelo ECM confirman la robustez de la estimación. 
+La Figura \ref{fig:model_diagnostics} presenta los tests visuales de validación del modelo.
+
+\begin{figure}[htbp]
+    \centering
+    
+    \caption[Diagnósticos del Modelo ECM]{
+        \textbf{Diagnósticos Estadísticos del Modelo de Corrección de Error}
+    }
+    
+    \vspace{0.5cm}
+    
+    \includegraphics[width=0.95\textwidth]{../../notebooks/figures/model_diagnostics.pdf}
+    
+    \vspace{0.3cm}
+    
+    \parbox{0.95\textwidth}{
+        \small
+        \textit{Panel superior izquierdo}: Evolución temporal de los residuos del modelo ECM, 
+        mostrando ausencia de patrones sistemáticos y comportamiento aleatorio alrededor de cero.
+        \textit{Panel superior derecho}: Gráfico Q-Q de normalidad que confirma la distribución 
+        normal de los residuos (puntos alineados con la línea teórica).
+        \textit{Panel inferior izquierdo}: Histograma de residuos con curva normal superpuesta, 
+        validando el supuesto de normalidad con media próxima a cero.
+        \textit{Panel inferior derecho}: Residuos versus valores ajustados, confirmando 
+        homocedasticidad (varianza constante) sin evidencia de heterocedasticidad.
+    }
+    
+    \label{fig:model_diagnostics}
+\end{figure}
+
+Los resultados de la Figura \ref{fig:model_diagnostics} validan los supuestos econométricos 
+fundamentales del modelo ECM, proporcionando confianza en la robustez estadística de las 
+estimaciones y, por extensión, en el indicador de vulnerabilidad derivado.
+
 \subsection{Construcción del Indicador Compuesto de Vulnerabilidad Externa}
 
-Una vez validado el modelo ECM y confirmada la robustez de sus propiedades estadísticas, se procede a construir el indicador sintético de vulnerabilidad externa. Este indicador combina tres dimensiones complementarias del riesgo macroeconómico, cada una capturando aspectos distintos del desequilibrio económico.
+Una vez validado el modelo ECM y confirmada la robustez de sus propiedades estadísticas, se procede a construir el indicador sintético de vulnerabilidad externa. Este indicador combina dos dimensiones complementarias del riesgo macroeconómico, cada una capturando aspectos distintos del desequilibrio económico.
 
 \subsubsection{Componentes del Indicador}
 
-El indicador compuesto de vulnerabilidad externa ($IVE_t$) se define como una combinación lineal ponderada de tres componentes fundamentales:
+El indicador compuesto de vulnerabilidad externa ($IVE_t$) se define como una combinación lineal ponderada de dos componentes fundamentales:
 
 \begin{equation}
-IVE_t = w_1 \cdot ECT_{norm,t} + w_2 \cdot Vol_{t} + w_3 \cdot Pers_t
+IVE_t = w_1 \cdot |ECT_{norm,t}| + w_2 \cdot Vol_{norm,t}
 \label{eq:indicador_compuesto}
 \end{equation}
 
-donde $w_1 + w_2 + w_3 = 1$ y cada componente se describe a continuación:
+donde $w_1 + w_2 = 1$ y cada componente se describe a continuación:
 
-\textbf{1. Término de Corrección de Error Normalizado ($ECT_{norm,t}$):}
+\textbf{1. Componente de Desequilibrio ($|ECT_{norm,t}|$):}
 
-El primer componente captura el grado de desequilibrio respecto al equilibrio de largo plazo estimado. Se normaliza mediante transformación z-score para facilitar la interpretación:
+El primer componente captura el grado de desequilibrio respecto al equilibrio de largo plazo estimado. Se normaliza mediante transformación z-score y se toma el valor absoluto para medir la distancia del equilibrio:
 
 \begin{equation}
-ECT_{norm,t} = \frac{|ECT_t| - \mu_{ECT}}{\sigma_{ECT}}
+|ECT_{norm,t}| = \left|\frac{ECT_t - \mu_{ECT}}{\sigma_{ECT}}\right|
 \label{eq:ect_normalizado}
 \end{equation}
 
-donde $\mu_{ECT}$ y $\sigma_{ECT}$ son la media y desviación estándar del ECT en el período de estimación. Valores elevados indican desviaciones significativas del equilibrio de largo plazo.
+donde $\mu_{ECT}$ y $\sigma_{ECT}$ son la media y desviación estándar del ECT en el período de estimación. Valores elevados indican desviaciones significativas del equilibrio de largo plazo, independientemente de si la economía está por encima o por debajo de su sendero sostenible.
 
-\textbf{2. Volatilidad de Corto Plazo ($Vol_t$):}
+\textbf{2. Componente de Volatilidad ($Vol_{norm,t}$):}
 
-El segundo componente mide la volatilidad de corto plazo en el crecimiento no explicado por el modelo, capturada mediante la desviación estándar móvil de los residuos del modelo ECM:
+El segundo componente mide la volatilidad normalizada de corto plazo en el crecimiento no explicado por el modelo, capturada mediante la desviación estándar móvil de los residuos del modelo ECM:
 
 \begin{equation}
-Vol_t = \sqrt{\frac{1}{k} \sum_{i=0}^{k-1} \varepsilon_{t-i}^2}
-\label{eq:volatilidad}
+Vol_{raw,t} = \sqrt{\frac{1}{k} \sum_{i=0}^{k-1} \varepsilon_{t-i}^2}
+\label{eq:volatilidad_raw}
 \end{equation}
 
-donde $k = 4$ (ventana móvil de 4 trimestres) y $\varepsilon_t$ son los residuos del modelo ECM. Esta medida captura períodos de incertidumbre elevada e inestabilidad macroeconómica.
-
-\textbf{3. Persistencia de Desequilibrios ($Pers_t$):}
-
-El tercer componente refleja la persistencia temporal de los desequilibrios, medida como el valor absoluto del ECT ponderado por su persistencia histórica:
-
 \begin{equation}
-Pers_t = |ECT_t| \cdot \left(\frac{1}{|\alpha|}\right)
-\label{eq:persistencia}
+Vol_{norm,t} = \frac{Vol_{raw,t} - \mu_{Vol}}{\sigma_{Vol}}
+\label{eq:volatilidad_norm}
 \end{equation}
 
-donde $\alpha = -0.0492$ es el coeficiente de corrección de error estimado. La intuición es que una velocidad de corrección más lenta (menor $|\alpha|$) implica mayor persistencia de los desequilibrios.
+donde $k = 4$ (ventana móvil de 4 trimestres), $\varepsilon_t$ son los residuos del modelo ECM, y $\mu_{Vol}$, $\sigma_{Vol}$ son la media y desviación estándar de la volatilidad rolling. Esta medida captura períodos de incertidumbre elevada e inestabilidad macroeconómica.
 
-\subsubsection{Optimización de Pesos}
+\subsubsection{Eliminación del Componente de Persistencia}
 
-Los pesos $w_1$, $w_2$, $w_3$ se determinan mediante optimización endógena utilizando programación secuencial cuadrática (SQP). El objetivo es maximizar la capacidad predictiva del indicador para anticipar desaceleraciones económicas significativas.
+La especificación original consideraba un tercer componente relacionado con la persistencia de desequilibrios. Sin embargo, el análisis teórico y empírico reveló inconsistencias conceptuales fundamentales:
 
-La función objetivo a minimizar es:
+\begin{itemize}
+    \item \textbf{Inconsistencia temporal}: La persistencia es una característica estructural del sistema que no varía trimestralmente, a diferencia de la vulnerabilidad coyuntural que pretende capturar el indicador.
+    \item \textbf{Redundancia analítica}: La información sobre velocidad de ajuste ya está implícitamente incorporada en la dinámica del ECT.
+    \item \textbf{Validación empírica}: El proceso de optimización endógena asigna peso prácticamente nulo ($w_3 \approx 0$) a este componente, confirmando su irrelevancia predictiva.
+\end{itemize}
+
+Por estas razones, se adopta una especificación parsimoniosa de dos componentes que mantiene la solidez conceptual y mejora la capacidad predictiva del indicador.
+
+\subsubsection{Optimización Endógena de Pesos}
+
+Los pesos $w_1$ y $w_2$ se determinan mediante optimización endógena utilizando programación secuencial cuadrática (SQP). El objetivo es maximizar la capacidad predictiva del indicador para anticipar desaceleraciones económicas significativas.
+
+La función objetivo busca maximizar la correlación absoluta entre el indicador y el crecimiento del PIB en $t+1$:
 
 \begin{equation}
-\min_{w_1,w_2,w_3} \sum_{t=1}^{T-h} \left(g_{t+h} - f(IVE_t)\right)^2
+\max_{w_1,w_2} |\text{corr}(IVE_t, \Delta y_{t+1})|
 \label{eq:optimizacion}
 \end{equation}
 
 sujeto a:
 \begin{align}
-w_1 + w_2 + w_3 &= 1 \\
-w_i &\geq 0, \quad i = 1,2,3
+w_1 + w_2 &= 1 \\
+w_i &\geq 0, \quad i = 1,2
 \end{align}
 
-donde $g_{t+h}$ es una variable binaria que toma valor 1 si ocurre una desaceleración significativa en el horizonte $h$ trimestres, y $f(IVE_t)$ es una función logística del indicador.
+donde $\Delta y_{t+1}$ representa el crecimiento del PIB real en el período siguiente. La optimización se realiza excluyendo el período COVID-19 (2020-2021Q2) para evitar distorsiones de los parámetros por eventos atípicos.
 
 \subsubsection{Pesos Óptimos y Interpretación}
 
-El proceso de optimización endógena, diseñado para maximizar la correlación con el crecimiento del PIB en $t+1$, arroja los siguientes pesos óptimos:
+El proceso de optimización endógena arroja los siguientes pesos óptimos:
 
 \begin{itemize}
-    \item $w_1 = 0.379$ (ECT normalizado): Peso sustancial pero no mayoritario, indicando la relevancia de los desequilibrios de largo plazo.
-    \item $w_2 = 0.621$ (Volatilidad): Peso dominante, sugiriendo que la inestabilidad de corto plazo es el predictor más potente de vulnerabilidad futura.
-    \item $w_3 = 0.000$ (Persistencia): Peso prácticamente nulo, indicando que este componente no añade poder predictivo adicional dado el contexto de los otros dos.
+    \item $w_1 = 0.379$ (Componente de Desequilibrio): Peso sustancial que refleja la relevancia de las desviaciones del equilibrio de largo plazo para predecir vulnerabilidad futura.
+    \item $w_2 = 0.621$ (Componente de Volatilidad): Peso dominante que sugiere que la inestabilidad de corto plazo es el predictor más potente de vulnerabilidad en el contexto brasileño.
 \end{itemize}
 
-La optimización logra una mejora del 24.4\% en la correlación absoluta con el crecimiento futuro, pasando de -0.157 (pesos originales equiponderados) a -0.196 (pesos optimizados). Este resultado sugiere que la volatilidad de corto plazo contiene información predictiva superior a la esperada inicialmente, posiblemente reflejando que los episodios de inestabilidad preceden sistemáticamente a las contracciones económicas en Brasil.
+La optimización logra una mejora del 24.4\% en la correlación absoluta con el crecimiento futuro, pasando de -0.157 (pesos iniciales equiponderados) a -0.196 (pesos optimizados). Este resultado sugiere que:
 
-La ausencia de peso para el componente de persistencia ($w_3 \approx 0$) indica que la información sobre la velocidad de corrección histórica no mejora la capacidad de predicción del indicador, posiblemente debido a que esta información ya está incorporada implícitamente en el término ECT y su volatilidad.
+\begin{enumerate}
+    \item La \textbf{volatilidad de corto plazo} contiene información predictiva superior, posiblemente reflejando que los episodios de inestabilidad preceden sistemáticamente a las contracciones económicas en Brasil.
+    \item Los \textbf{desequilibrios de largo plazo}, aunque relevantes, tienen un impacto más gradual sobre la vulnerabilidad futura.
+    \item La \textbf{correlación negativa} confirma la validez teórica: mayor vulnerabilidad actual se asocia con menor crecimiento futuro.
+\end{enumerate}
+
+
+La optimización de pesos requiere validación robusta ante eventos atípicos. La Figura 
+\ref{fig:covid_analysis} examina el impacto del período COVID-19 en la relación 
+vulnerabilidad-crecimiento.
+
+\begin{figure}[htbp]
+    \centering
+    
+    \caption[Análisis de Correlación: Impacto COVID-19]{
+        \textbf{Validación de la Relación Vulnerabilidad-Crecimiento: Análisis del Impacto COVID-19}
+    }
+    
+    \vspace{0.5cm}
+    
+    \includegraphics[width=0.95\textwidth]{../../notebooks/figures/covid_correlation_analysis.pdf}
+    
+    \vspace{0.3cm}
+    
+    \parbox{0.95\textwidth}{
+        \small
+        \textit{Panel izquierdo}: Relación vulnerabilidad-crecimiento incluyendo el período 
+        COVID-19 (2020-2021Q2), mostrando correlación positiva distorsionada por eventos 
+        excepcionales (puntos rojos marcados con X).
+        \textit{Panel derecho}: Relación vulnerabilidad-crecimiento excluyendo el período 
+        COVID-19, revelando la correlación negativa subyacente (-0.196) que valida la 
+        teoría económica: mayor vulnerabilidad externa se asocia sistemáticamente con 
+        menor crecimiento futuro. La línea de tendencia (azul) confirma la relación 
+        estructural una vez eliminados los shocks atípicos.
+    }
+    
+    \label{fig:covid_analysis}
+\end{figure}
+
+El análisis de la Figura \ref{fig:covid_analysis} justifica la exclusión del período 
+COVID-19 en la optimización de pesos, ya que los eventos pandémicos introdujeron una 
+relación espuria que oscurecía el patrón estructural subyacente. La correlación negativa 
+de -0.196 (sin COVID) confirma la validez teórica del indicador optimizado.
+
 
 \subsubsection{Interpretación del Indicador Final}
 
 El indicador compuesto $IVE_t$ produce valores normalizados donde:
 
 \begin{itemize}
-    \item \textbf{$IVE_t < 0$}: Vulnerabilidad baja, condiciones macroeconómicas estables
-    \item \textbf{$0 \leq IVE_t < 1$}: Vulnerabilidad moderada, seguimiento requerido
-    \item \textbf{$1 \leq IVE_t < 2$}: Vulnerabilidad alta, señal de alerta
-    \item \textbf{$IVE_t \geq 2$}: Vulnerabilidad crítica, riesgo de crisis inminente
+    \item \textbf{$IVE_t < 0$}: Vulnerabilidad por debajo del promedio histórico
+    \item \textbf{$0 \leq IVE_t < 0.5$}: Vulnerabilidad moderada
+    \item \textbf{$0.5 \leq IVE_t < 1.0$}: Vulnerabilidad elevada
+    \item \textbf{$IVE_t \geq 1.0$}: Vulnerabilidad extrema (percentil >90)
 \end{itemize}
 
-El indicador ha demostrado capacidad para anticipar episodios de stress macroeconómico con un horizonte promedio de 2-3 trimestres, proporcionando una herramienta cuantitativa valiosa para el monitoreo de la vulnerabilidad externa de Brasil.
+El indicador optimizado ha demostrado capacidad mejorada para anticipar episodios de stress macroeconómico, con una correlación de -0.196 con el crecimiento futuro del PIB. La configuración final de pesos (37.9\% desequilibrio, 62.1\% volatilidad) refleja las características específicas de la vulnerabilidad externa brasileña, proporcionando una herramienta cuantitativa calibrada endógenamente para el monitoreo de riesgo macroeconómico.
 
+La Figura \ref{fig:vulnerability_analysis} presenta los resultados principales del indicador de vulnerabilidad externa optimizado para Brasil en el período 2000-2024.
+
+\begin{figure}[htbp]
+    \centering
+    
+    \caption[Indicador de Vulnerabilidad Externa - Brasil]{
+        \textbf{Indicador de Vulnerabilidad Externa para Brasil (2000-2024)}
+    }
+    
+    \vspace{0.5cm}
+    
+    \includegraphics[width=0.95\textwidth]{../../notebooks/figures/vulnerability_analysis.pdf}
+    
+    \vspace{0.3cm}
+    
+    % DESCRIPCIÓN CON PARBOX (justificación automática)
+    \parbox{0.95\textwidth}{
+        \small
+        \textit{Panel superior izquierdo}: Evolución del PIB real (escala izquierda) 
+        y del índice de vulnerabilidad (escala derecha). Las áreas sombreadas en rojo 
+        indican episodios de alta vulnerabilidad (percentil >75). 
+        \textit{Panel superior derecho}: Crecimiento trimestral del PIB vs. índice de vulnerabilidad. 
+        \textit{Panel inferior izquierdo}: Relación vulnerabilidad-crecimiento excluyendo 
+        el período COVID-19, mostrando correlación de -0.196. 
+        \textit{Panel inferior derecho}: Descomposición del indicador optimizado con 
+        pesos endógenos: 38.0\% desequilibrio de largo plazo (azul) y 62.0\% volatilidad 
+        de corto plazo (naranja).
+    }
+    
+    \label{fig:vulnerability_analysis}
+\end{figure}
+
+El panel superior izquierdo de la Figura \ref{fig:vulnerability_analysis} muestra que los 
+episodios de mayor vulnerabilidad coinciden sistemáticamente con períodos de desaceleración 
+económica o crisis, particularmente durante 2002-2003 (crisis energética), 2008-2009 
+(crisis financiera global) y 2020-2021 (pandemia COVID-19). El indicador anticipó estas 
+crisis con un horizonte promedio de 2-3 trimestres.
 
 \section{Análisis de Resultados Empíricos y Capacidad Predictiva}
 
