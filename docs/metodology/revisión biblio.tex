@@ -1,0 +1,94 @@
+\documentclass[12pt]{article}
+
+% ------------------ PAQUETES ------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{titlesec}
+
+% ------------------ FORMATO ------------------
+\geometry{a4paper, margin=2.5cm}
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0em}
+\onehalfspacing
+\titleformat{\section}{\large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{1em}{}
+
+% ------------------ METADATOS ------------------
+\title{Revisión de la Literatura}
+\author{Autor: Tu Nombre}
+\date{\today}
+
+% ------------------ DOCUMENTO ------------------
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Revisión de la Literatura}
+
+La vulnerabilidad externa de las economías emergentes, particularmente en América Latina, ha sido ampliamente estudiada desde diversas perspectivas teóricas y empíricas. Esta sección revisa las principales contribuciones que sustentan y contextualizan el presente trabajo, con énfasis en la literatura sobre (i) los determinantes externos del crecimiento económico, (ii) el uso de modelos de cointegración y VECM en análisis macroeconómico, y (iii) la construcción de indicadores sintéticos de alerta temprana.
+
+\subsection{Factores externos y vulnerabilidad macroeconómica}
+
+Diversos estudios han documentado la sensibilidad estructural de las economías latinoamericanas frente a las condiciones del entorno internacional. \cite{calvo1993} subrayan el papel de los flujos de capital en la amplificación de los ciclos económicos, mientras que \cite{reinhart2009} demuestran que la recurrencia de crisis financieras en economías emergentes suele estar precedida por episodios de bonanza externa seguidos de shocks abruptos.
+
+En este contexto, los términos de intercambio, las tasas de interés internacionales y las condiciones financieras globales han sido identificadas como variables críticas para explicar episodios de contracción económica \cite{frankel2012}. Estos factores afectan tanto la posición externa como la dinámica del producto interno bruto (PIB), condicionando la estabilidad macroeconómica y la sostenibilidad fiscal de países dependientes de exportaciones de commodities.
+
+\subsection{Modelos VECM y cointegración en macroeconomía aplicada}
+
+El marco metodológico que fundamenta este trabajo se basa en la literatura sobre modelos de Vectores de Corrección de Errores (VECM), particularmente en su aplicación al análisis de cointegración entre variables macroeconómicas. \cite{johansen1995} introdujo un enfoque estadístico robusto para la identificación de relaciones de largo plazo entre variables no estacionarias, lo que permitió el desarrollo de modelos estructurales capaces de capturar tanto la dinámica de corto plazo como los equilibrios de largo plazo.
+
+En América Latina, la aplicación pionera de este enfoque fue desarrollada por \cite{izquierdo2008}, quienes construyen un modelo VECM para descomponer el PIB regional en componentes atribuibles a shocks externos e internos. Su análisis contrafactual basado en funciones impulso-respuesta evidencia la magnitud del impacto de los términos de intercambio y las condiciones financieras sobre el ciclo económico regional.
+
+Este trabajo retoma y amplía dicho marco metodológico con una especificación más reciente y centrada en economías individuales —particularmente Brasil—, incorporando datos hasta 2024 y variables contemporáneas como el rendimiento de bonos del Tesoro estadounidense, el spread soberano y una dummy pandémica para capturar distorsiones estructurales excepcionales.
+
+\subsection{Indicadores sintéticos y sistemas de alerta temprana}
+
+La necesidad de desarrollar herramientas operativas que permitan no solo explicar, sino anticipar episodios de vulnerabilidad externa ha impulsado la literatura sobre indicadores sintéticos de alerta temprana. \cite{kaminsky1998} establecieron una metodología basada en umbrales críticos para identificar crisis cambiarias, mientras que \cite{bussiere2006} propusieron modelos logit no lineales que permiten predecir crisis financieras con alta precisión.
+
+Más recientemente, el Fondo Monetario Internacional ha promovido la construcción de sistemas integrados de alerta que combinan múltiples variables en un solo índice con capacidad predictiva validada mediante métricas estadísticas como el AUC (Área Bajo la Curva) y sensibilidad/especificidad \cite{balakrishnan2011}. Este enfoque es coherente con la orientación del presente trabajo, que construye un indicador sintético optimizado endógenamente para maximizar su correlación con el crecimiento futuro del PIB, integrando desequilibrios estructurales y volatilidad macroeconómica.
+
+\subsection{Contribución del presente estudio}
+
+El presente estudio se inscribe en esta literatura combinando los enfoques estructurales de cointegración con herramientas operacionales de monitoreo prospectivo. A diferencia de trabajos anteriores que privilegian el análisis retrospectivo \cite{izquierdo2008} o modelos de clasificación estáticos \cite{kaminsky1998}, esta investigación propone un marco híbrido que permite identificar desequilibrios de largo plazo y perturbaciones de corto plazo en un solo indicador cuantitativo, con validación empírica sólida.
+
+Asimismo, la optimización endógena de ponderaciones basada en la correlación con el crecimiento económico futuro representa una innovación metodológica respecto a enfoques que asignan pesos equiponderados o basados en juicios de expertos. La capacidad del indicador para anticipar episodios de crisis históricas en Brasil —como la crisis de 2002--2003, la crisis financiera global de 2008--2009 y el shock pandémico de 2020— subraya su utilidad potencial para el diseño de políticas macroeconómicas preventivas.
+
+\newpage
+\begin{thebibliography}{99}
+
+\bibitem{calvo1993}
+Calvo, G. A., Leiderman, L., \& Reinhart, C. M. (1993). Capital inflows and real exchange rate appreciation in Latin America. \textit{IMF Staff Papers}, 40(1), 108--151.
+
+\bibitem{reinhart2009}
+Reinhart, C. M., \& Rogoff, K. S. (2009). \textit{This Time is Different: Eight Centuries of Financial Folly}. Princeton University Press.
+
+\bibitem{johansen1995}
+Johansen, S. (1995). \textit{Likelihood-Based Inference in Cointegrated VAR Models}. Oxford University Press.
+
+\bibitem{izquierdo2008}
+Izquierdo, A., Romero, R., \& Talvi, E. (2008). Booms and busts in Latin America: The role of external factors. \textit{IDB Working Paper No. 631}.
+
+\bibitem{kaminsky1998}
+Kaminsky, G. L., Lizondo, S., \& Reinhart, C. M. (1998). Leading indicators of currency crises. \textit{IMF Staff Papers}, 45(1), 1--48.
+
+\bibitem{frankel2012}
+Frankel, J. A., \& Saravelos, G. (2012). Can leading indicators assess country vulnerability? Evidence from the 2008--09 global financial crisis. \textit{Journal of International Economics}, 87(2), 216--231.
+
+\bibitem{balakrishnan2011}
+Balakrishnan, R., Danninger, S., Elekdag, S., \& Tytell, I. (2011). An early warning system for systemic banking crises. \textit{IMF Working Paper}, WP/11/249.
+
+\bibitem{bussiere2006}
+Bussière, M., \& Fratzscher, M. (2006). Towards a new early warning system of financial crises. \textit{Journal of International Money and Finance}, 25(6), 953--973.
+
+\end{thebibliography}
+
+\end{document}

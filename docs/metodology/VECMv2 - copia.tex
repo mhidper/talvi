@@ -5,12 +5,15 @@
 \usepackage[spanish]{babel}
 \usepackage{amsmath}
 \usepackage{graphicx}
-\graphicspath{{figures/}}
 \usepackage{booktabs}
-\usepackage{natbib}     % ✅ AGREGAR - para citas estilo autor-año
-\usepackage{hyperref}   % ✅ AGREGAR - para enlaces
-\usepackage{lineno}     % ✅ AGREGAR - para números de línea (común en preprints)
+\usepackage{natbib}
 \usepackage{floatrow}
+\usepackage{lineno}
+\usepackage{hyperref}
+\usepackage{siunitx}
+
+
+\graphicspath{{figures/}}
 
 \floatsetup[figure]{capposition=top}
 
@@ -83,6 +86,80 @@ El trabajo seminal de Izquierdo, Romero y Talvi (2008) establece un precedente m
 La arquitectura econométrica de Talvi se estructura alrededor de la estimación de relaciones de cointegración entre el índice de PIB LAC7 y tres factores externos fundamentales: los términos de intercambio de la región, la producción industrial del G7 (como proxy de demanda externa), y las condiciones financieras internacionales medidas a través de spreads soberanos. Su modelo VECM permite descomponer las fluctuaciones del producto regional en componentes atribuibles a shocks externos versus dinámicas internas, proporcionando una cuantificación rigurosa del papel de los factores externos en los ciclos económicos latinoamericanos.
 
 La contribución metodológica central del trabajo de Talvi radica en su capacidad para realizar ejercicios contrafactuales cuantitativos mediante funciones impulso-respuesta derivadas del VECM estimado. Estos ejercicios permiten evaluar cómo habría evolucionado el PIB regional bajo escenarios alternativos de condiciones externas, proporcionando una herramienta analítica poderosa para separar los efectos de políticas domésticas de los impactos de factores exógenos. Particularmente, el modelo permite cuantificar el impacto de "sudden stops" en flujos de capital y shocks adversos en términos de intercambio sobre la trayectoria de crecimiento regional.
+
+\subsection{Especificación del Modelo para Brasil}
+
+En este ejercicio, y siguiendo la metodología de Izquierdo, Romero y Talvi (2008), adaptamos el modelo de corrección de errores
+(VECM) al caso particular de Brasil. A diferencia del trabajo original, que estima un VECM restringido para
+un agregado regional (LAC7), aquí implementamos un \textbf{Modelo de Corrección de Errores (ECM)} con
+integración mixta y estructura de rezagos optimizada.
+
+\subsection{Variables}
+
+Partiendo del marco conceptual de Izquierdo, Romero y Talvi (2008), mantenemos el mismo núcleo de factores externos —demanda internacional, términos de intercambio y condiciones financieras globales— pero trasladados al caso específico de Brasil. Esta continuidad garantiza comparabilidad con el estudio regional original, al tiempo que la adaptación nacional permite capturar la heterogeneidad estructural del país.
+
+\begin{itemize}
+    \item $ \log GDP_{BRA} $: logaritmo del PIB real de Brasil, variable endógena principal del modelo. \\
+    \textit{Fuente: IBGE y OECD}.
+
+    \item $ \log TOT_{BRA} $: logaritmo de los términos de intercambio de Brasil, que resume la influencia de los precios de commodities sobre el ingreso externo. \\
+    \textit{Fuente: IBGE}.
+
+    \item $ \log IP_{G7} $: índice ponderado de producción industrial de los países del G7 (logaritmos), como proxy de la demanda externa. \\
+    \textit{Fuente: OECD}. 
+
+    \item $ US10Y $: rendimiento de los bonos del Tesoro de EE.UU. a 10 años, indicador de liquidez y condiciones financieras globales. \\
+    \textit{Fuente: Federal Reserve (FRED)}.
+
+    \item $ Spread $: diferencial de riesgo soberano de Brasil frente a bonos del Tesoro de EE.UU., reflejo de la percepción de riesgo país. \\
+    \textit{Fuente: Bloomberg}.
+\end{itemize}
+
+\subsection{Evaluación de la Existencia de Relaciones de Cointegración}
+
+La posibilidad de que existan relaciones de cointegración se evalúa mediante pruebas de raíz unitaria (Augmented Dickey-Fuller, Phillips-Perron y KPSS). Así, una potencial combinación de series estacionarias y no estacionarias justificaría la estimación de un \textbf{Modelo de Corrección de Errores (ECM)} con cointegración, al que habría que añadir la necesaria evaluación del número de rezagos óptimos.
+
+Se confirma la existencia de una relación de cointegración entre el PIB brasileño, los términos de intercambio
+y la tasa de interés a 10 años de EE.UU. El término de corrección de error ($ECT_t$) se define como:
+
+\[
+ECT_t = \log GDP_{BRA,t} - \gamma_1 \log TOT_{BRA,t} - \gamma_2 US10Y_t
+\]
+
+\subsection{Especificación del ECM Optimizado}
+
+La dinámica de corto plazo se modela mediante un ECM ampliado, con dos rezagos del $ECT$ y rezagos en las
+variables externas, de acuerdo con los criterios AIC y BIC:
+
+\[
+\Delta \log GDP_{BRA,t} = \alpha_1 ECT_{t-1} + \alpha_2 ECT_{t-2} +
+\beta_1 \Delta \log TOT_{BRA,t} + \beta_2 \Delta \log TOT_{BRA,t-1} +
+\beta_3 \Delta US10Y_t + \beta_4 \Delta US10Y_{t-1} +
+\delta_1 \log IP_{G7,t} + \delta_2 \log IP_{G7,t-1} +
+\phi_1 Spread_t + \phi_2 Spread_{t-1} + \theta D_t + \varepsilon_t
+\]
+
+donde $D_t$ corresponde a la dummy de pandemia (2020Q1–2020Q3).
+
+\subsection{Indicador de Vulnerabilidad Externa Optimizado}
+
+El indicador compuesto se construye a partir de dos componentes esenciales, con pesos calibrados endógenamente:
+
+\[
+VI_t = 0.379 \times |ECT^{norm}_t| + 0.621 \times Vol^{norm}_t
+\]
+
+donde $ECT^{norm}_t$ es el término de corrección de error normalizado (z-score) y $Vol^{norm}_t$
+es la volatilidad móvil de los residuos del modelo, normalizada en una ventana de 4 trimestres.
+
+El sistema de alertas se define como:
+\begin{itemize}
+    \item Verde: $VI < 0$ (vulnerabilidad baja).
+    \item Amarillo: $0 \leq VI < 0.5$ (vulnerabilidad moderada).
+    \item Naranja: $0.5 \leq VI < 1.0$ (vulnerabilidad elevada).
+    \item Rojo: $VI \geq 1.0$ (vulnerabilidad extrema).
+\end{itemize}
+
 
 \subsection{Extensiones Metodológicas del Presente Trabajo}
 
