@@ -1,0 +1,946 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Paquetes mínimos ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=flexible,
+  keepspaces=true,
+  literate={─}{-}1 {│}{|}1 {├}{+}1 {└}{+}1
+}
+
+% ---------- Utilidades ----------
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathbb{V}\text{ar}}
+\newcommand{\Cov}{\mathbb{C}\text{ov}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+
+\title{Indicador de Vulnerabilidad Externa: \\ 
+Diseño “model-implied” basado en VECM, IRFs y Riesgo}
+\author{ \small{(Borrador técnico)} }
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Este documento presenta un indicador de vulnerabilidad externa para Brasil (extensible a otras economías) que combina el desequilibrio respecto al equilibrio de largo plazo (derivado de un VECM) con el riesgo externo vigente (covarianzas de shocks y respuestas impulso–respuesta). El índice final pondera el empuje contractivo sugerido por el modelo en unidades de riesgo y lo amplifica por el nivel de incertidumbre observado.
+\end{abstract}
+
+\tableofcontents
+
+% ===================================================
+\section{Introducción e intuición}
+% ===================================================
+
+\subsection{Motivación}
+
+Las economías abiertas experimentan ciclos de actividad que dependen, en gran medida, de condiciones externas: términos de intercambio, condiciones financieras globales, primas de riesgo y demanda de socios comerciales. En particular, el PIB real es sensible a \emph{shocks} que operan por múltiples canales (comercial, financiero y de confianza) y que, además, interactúan con el estado de desequilibrio macroeconómico de partida: cuando la economía se encuentra alejada de su equilibrio de largo plazo, un mismo \emph{shock} puede producir efectos diferentes que si parte de un equilibrio cercano.
+
+En la práctica, responsables de política y gestores de riesgo necesitan una \textbf{métrica operativa, interpretable y reproducible} que responda a tres preguntas:
+\begin{enumerate}
+  \item \textbf{¿Cuánta presión contractiva sugiere hoy el modelo?} Es decir, dado el desvío respecto al equilibrio externo (medido por el término de corrección del error, ECT) y su velocidad de ajuste, cuál es el empuje previsto sobre el crecimiento a corto plazo.
+  \item \textbf{¿Cuánta incertidumbre externa enfrenta ese empuje?} El mismo impulso puede ser más o menos preocupante según la volatilidad y covarianzas recientes de los \emph{shocks} relevantes.
+  \item \textbf{¿Qué canal está detrás de cada episodio?} Para que la métrica sea accionable debe permitir atribuir cambios del indicador a variables del equilibrio (comercio, tasas globales, etc.) o a fuentes de riesgo (ToT, tasas, \emph{spread}), evitando índices opacos con ponderaciones ad--hoc.
+\end{enumerate}
+
+Los indicadores habituales suelen ser \emph{scorecards} heurísticos o agregados comparativos que mezclan variables con pesos arbitrarios, lo que dificulta su interpretación y actualización. Este trabajo propone un indicador \textbf{``model-implied''} que:
+(i) extrae el \textit{desequilibrio} del propio modelo (un VECM estimado sobre el conjunto de variables externas y el PIB),
+(ii) cuantifica el \textit{riesgo} con la matriz de covarianzas empírica de los \emph{shocks} y las funciones impulso--respuesta del PIB,
+y (iii) combina ambos en una única señal con lectura económica inmediata: vulnerabilidad alta cuando el equilibrio sugiere corrección a la baja \emph{y} el entorno externo es incierto.
+
+El objetivo es, por tanto, construir una medida que sea (a) \textbf{coherente con la teoría y la evidencia}, (b) \textbf{explicable por componentes} (desequilibrio vs.\ riesgo; comercio vs.\ financiero), y (c) \textbf{portable y reproducible} en el tiempo y entre países, con un número mínimo de elecciones del usuario (horizonte de análisis y ventana para la estimación de covarianzas).
+
+
+\subsection{Idea básica del indicador (lectura no técnica)}
+
+La idea puede resumirse en una pregunta sencilla: \emph{dado cómo está hoy la economía frente a su equilibrio externo y cuán revuelto está el mundo, \textbf{qué tan vulnerable} es el crecimiento en los próximos trimestres?} 
+Para responderla combinamos dos piezas que cualquier lector reconoce intuitivamente: \textbf{desequilibrio} y \textbf{riesgo}.
+
+\paragraph{1) Equilibrio de largo plazo (la ``línea de base'').}
+Igual que una brújula señala el norte, nuestros datos señalan una relación de referencia entre el PIB y los factores externos (términos de intercambio, tipos largos de EEUU, spreads, etc.). 
+Cuando la economía se aleja de esa línea de base, aparece un \textbf{desequilibrio}: si estamos por encima de lo que permiten los fundamentos, lo normal es que el crecimiento tienda a \emph{corregir} en los siguientes trimestres; si estamos por debajo, tenderá a \emph{recuperar}. 
+Ese empuje previsto de corrección (hacia arriba o hacia abajo) lo llamaremos \textbf{empuje del equilibrio}.
+
+\paragraph{2) Empuje del equilibrio hoy (el ``viento'').}
+No basta con saber si estamos desviados: importa \emph{cuán fuerte} es el viento que empuja a corregir. 
+Nuestro modelo traduce el desequilibrio en un \textbf{empuje esperado sobre el crecimiento a corto plazo}. 
+Si ese empuje es \emph{contractivo} (apunta hacia abajo), la vulnerabilidad potencial aumenta; si es \emph{expansivo} (apunta hacia arriba), tenemos colchón.
+
+\paragraph{3) Riesgo externo vigente (el ``oleaje'').}
+Incluso con viento a favor, navegar un mar bravo es difícil. 
+Medimos cuán \textbf{incierto} está el entorno externo hoy combinando dos ingredientes observables: 
+(i) cuánto se mueve el PIB \emph{cuando} hay un shock en cada factor externo (esto lo dice la respuesta impulso--respuesta del PIB), y 
+(ii) cuánta volatilidad y comovimiento muestran últimamente esos shocks entre sí (su matriz de covarianzas en ventana móvil). 
+El resultado es una medida de \textbf{riesgo agregado} para el crecimiento en el horizonte que nos interesa.
+
+\paragraph{4) Una señal única y legible.}
+Con las dos piezas anteriores construimos el indicador como un \textbf{balance señal--ruido}: 
+\emph{cuánto empuje contractivo tenemos, medido en unidades del riesgo actual}, y además lo \textbf{amplificamos} cuando el mar está especialmente picado. 
+En símbolos, si denotamos por $\mu_t$ el empuje del equilibrio y por $\sigma_t$ el riesgo externo vigente, definimos la vulnerabilidad en $t$ como
+\[
+\text{Vulnerabilidad}_t \;=\; \underbrace{\left(-\,\frac{\mu_t}{\sigma_t}\right)}_{\text{empuje contractivo en ``sigmas''}} 
+\;\times\; 
+\underbrace{f(\sigma_t)}_{\text{amplificador de riesgo}},
+\]
+donde $f(\sigma_t)$ crece con la incertidumbre (cuando el mundo está más revuelto, la misma presión contractiva es más preocupante).
+
+\paragraph{Cómo se lee.}
+El indicador \emph{sube} cuando el modelo sugiere una corrección a la baja más intensa y/o cuando el entorno externo se vuelve más incierto; 
+\emph{baja} cuando hay colchón del equilibrio y/o el entorno se normaliza. 
+Además, el diseño es \textbf{explicable}: podemos descomponer la señal en sus dos motores (desequilibrio y riesgo) y señalar qué variable externa o qué shock está detrás de cada episodio, evitando índices opacos con ponderaciones arbitrarias.
+
+\subsection{Aportaciones y diferencia frente a índices ad--hoc}
+
+La propuesta se aparta de los índices compuestos tradicionales (tipo \emph{scorecard}) en tres dimensiones clave: 
+\textbf{(i) diseño model--implied}, \textbf{(ii) trazabilidad por componentes} y \textbf{(iii) parsimonia de parámetros}.
+
+\paragraph{Diseño \emph{model--implied} (sin pesos arbitrarios).}
+El índice no es una media ponderada \emph{ad--hoc}. El \textbf{desequilibrio} proviene del término de corrección del error (ECT) y su velocidad de ajuste estimada, y el \textbf{riesgo} proviene de las IRFs del PIB y de la covarianza empírica de los shocks. 
+Así, las ponderaciones efectivas las dictan el modelo y los datos, no juicios discrecionales.
+
+\paragraph{Trazabilidad y explicabilidad por componentes.}
+Cada observación del indicador se puede descomponer en:
+(i) contribuciones de las variables de la relación de largo plazo a $\mu_t$ (por variable y por rezago del ECT), y 
+(ii) contribuciones de cada shock a $\sigma_t^2$ (incluyendo el papel de las covarianzas). 
+Esto permite responder de forma auditable: \emph{``qué canal''} (comercial, financiero, riesgo) explica cada episodio.
+
+\paragraph{Parsimonia y portabilidad.}
+El usuario sólo fija dos hiperparámetros principales: el horizonte $H$ (p.\,ej., cuatro trimestres) y la ventana $W$ para la covarianza \(\Sigma_t\). 
+Opcionalmente se ajusta el exponente del amplificador de riesgo $f(\sigma)$.
+Esta parsimonia facilita la \textbf{reproducibilidad temporal} y la \textbf{portabilidad} entre países.
+
+\paragraph{Métrica coherente con la lectura económica.}
+La forma $\left(-\mu_t/\sigma_t\right)f(\sigma_t)$ entrega una señal con sentido macro:
+sube si el modelo sugiere corrección a la baja y/o si el entorno externo está más incierto; 
+baja si hay colchón del equilibrio y/o si el riesgo se normaliza.
+
+\begin{table}[h!]
+\centering
+\caption{Comparación conceptual: índice propuesto vs.\ índices ad--hoc}
+\begin{tabular}{@{}p{4cm}p{5.2cm}p{5.2cm}@{}}
+\toprule
+ & \textbf{Índice propuesto (model--implied)} & \textbf{Índice ad--hoc típico} \\
+\midrule
+\textit{Origen de pesos} & De parámetros estimados (ECT, IRFs, \(\Sigma_t\)) & Elección discrecional o heurística \\
+\textit{Trazabilidad} & Descomposición por variable/shock y por rezago & Limitada; mezcla opaca de entradas \\
+\textit{Lectura} & Señal--ruido con amplificador de riesgo; interpretable & Puntuación agregada difícil de mapear a riesgos \\
+\textit{Parámetros de usuario} & $H$, $W$, (opcional $\lambda$) & Varios: normalizaciones, escalas, pesos \\
+\textit{Portabilidad} & Alta (misma \emph{pipeline} entre países) & Baja (reajustes caso a caso) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===================================================
+\section{Datos y pre-procesado}
+% ===================================================
+
+\subsection{Conjunto de datos}
+
+Trabajamos con un panel trimestral que combina el PIB real de Brasil con un conjunto de \emph{drivers} externos. La Tabla~\ref{tab:variables} resume las series empleadas, su frecuencia, el tratamiento base y fuentes típicas de referencia.\footnote{Las fuentes concretas pueden variar según disponibilidad: Banco Central do Brasil, IBGE, BIS, FRED, IMF-IFS, entre otras.}
+
+\begin{table}[h!]
+\centering
+\caption{Resumen de variables y construcción base}
+\label{tab:variables}
+\begin{tabular}{@{}p{4.2cm}p{3.2cm}p{6.6cm}p{3.5cm}@{}}
+\toprule
+\textbf{Variable} & \textbf{Símbolo} & \textbf{Descripción y tratamiento base} & \textbf{Fuente (ej.)} \\
+\midrule
+PIB real (Brasil)            & $y_t$               & PIB real encadenado; \textit{log}; ajuste estacional (si procede) & IBGE / BCB \\
+Términos de intercambio      & $\text{ToT}_t$      & Índice de ToT; \textit{log}; I(1) & IFS / BCB \\
+Bono EEUU 10 años            & $\text{US10Y}_t$    & Rendimiento a 10Y; nivel (\%); I(1) & FRED \\
+\textit{Risk spread} externo & $\text{Spread}_t$   & EMBI/sovereign spread; nivel (bps); I(0) & JPM/IFS \\
+Producción G7                & $\text{IP\_G7}_t$   & Índice de producción; \textit{log}; I(0) & OECD/IFS \\
+Dummies COVID                & $D^{\text{crash}}_t$, $D^{\text{rec}}_t$ & Identifican colapso y recuperación inicial & Construcción propia \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Todas las series se alinean a fin de trimestre y se convierten a un índice temporal común para evitar \emph{ragged edges}. Se documenta cualquier empalme, interpolación estacional o revisión metodológica relevante.
+
+\subsection{Transformaciones}
+
+Sea $x_t$ una serie en niveles. Usamos la siguiente notación para transformaciones estándar:
+
+\begin{itemize}
+  \item \textbf{Logaritmos:} $\ell(x_t) \equiv \log x_t$. Se aplican a agregados reales y a índices positivos (PIB, ToT, IP\_G7).
+  \item \textbf{Diferencias de primer orden (I(1)):} $\Delta x_t \equiv x_t - x_{t-1}$.
+  \item \textbf{Crecimiento aproximado:} $\Delta \log x_t \approx \%\; \text{trimestral} / 100$.
+  \item \textbf{Alineación y \textit{missing}:} las series se sincronizan en el menor intervalo común; los NA's iniciales por diferencias se mantienen (no se rellenan).
+  \item \textbf{Tratamiento de episodios atípicos (COVID):} se incluyen dummies $D^{\text{crash}}_t$ y $D^{\text{rec}}_t$ para capturar la no linealidad del 2020T2 y el rebote inicial.
+\end{itemize}
+
+En concreto, aplicamos:
+\[
+\begin{aligned}
+& y_t \;=\; \log(\text{PIB real}_t), \qquad 
+&& \text{ToT}_t \;=\; \log(\text{ToT}_t^{\text{índice}}), \\
+& \text{US10Y}_t \;\text{en nivel} \;(\%), \qquad
+&& \text{Spread}_t \;\text{en nivel} \;(\text{bps}), \\
+& \text{IP\_G7}_t \;=\; \log(\text{IP\_G7}_t^{\text{índice}}).
+\end{aligned}
+\]
+A efectos de choques empíricos (para la covarianza rolling en el riesgo), usamos:
+\[
+s_t \equiv 
+\begin{bmatrix}
+\Delta\,\text{ToT}_t \\
+\Delta\,\text{US10Y}_t \\
+\text{Spread}_t \\
+\end{bmatrix},
+\quad\text{(para IP\_G7, si se incluye como shock: }\Delta\,\text{IP\_G7}_t\text{).}
+\]
+Es decir, variables \emph{I(1)} en diferencias; variables \emph{I(0)} en niveles.
+
+\paragraph{Notas prácticas.}
+(1) Si alguna serie de precio/rendimiento muestra \emph{jumps} por cambios metodológicos, se controla con dummies puntuales. 
+(2) La estacionalidad del PIB se corrige con la serie ajustada oficial cuando está disponible; en su defecto, se documenta el filtro usado.
+(3) Los outliers extremos se documentan; no se winsorizan por defecto para conservar la señal de estrés.
+
+\subsection{Diagnóstico de integración y cointegración}
+
+Antes de estimar el VECM se realiza un protocolo estándar:
+
+\paragraph{Orden de integración (I(0) vs.\ I(1)).}
+Para cada variable candidata se aplican tests de raíz unitaria y estacionariedad:
+\begin{itemize}
+  \item \textbf{ADF} (Augmented Dickey--Fuller) sobre niveles y, si procede, sobre diferencias.
+  \item \textbf{KPSS} para corroborar estacionariedad (invariante a la hipótesis nula).
+\end{itemize}
+La decisión práctica se toma por \emph{consenso} entre ADF/KPSS y el razonamiento económico: agregados reales e índices de precios internacionales suelen ser \emph{I(1)}, ciertos diferenciales de tipos y spreads tienden a ser \emph{I(0)}.
+
+\paragraph{Rango de cointegración (Johansen).}
+Sea $z_t \in \R^{m}$ el vector de variables \emph{I(1)} (p.ej., $[\,y_t,\ \text{ToT}_t,\ \text{US10Y}_t\,]^\top$). 
+Aplicamos el procedimiento de Johansen (traza y máximo eigenvalor) para determinar el rango $r \in \{0,\ldots,m-1\}$. 
+Seleccionado $r=1$ (caso típico), la relación de largo plazo se escribe:
+\[
+ECT_t \;\equiv\; \beta^\top z_t \;=\; \beta_0 + \sum_{j=1}^{m} \beta_j\, z_{j,t},
+\]
+con determinísticos (constante/tendencia restringida o no) según el caso. 
+El rango y la especificación de determinísticos se eligen con base en:
+(i) evidencia estadística (valores críticos y sensibilidad a rezagos),
+(ii) interpretabilidad económica de los signos, y
+(iii) estabilidad de residuos en el VECM resultante.
+
+\paragraph{Rezagos y dummies.}
+El número de rezagos $p$ del VECM se fija con criterios de información (AIC/SBIC) y diagnóstico de autocorrelación de residuos. 
+Los dummies $D^{\text{crash}}_t$ y $D^{\text{rec}}_t$ se incluyen como exógenas para absorber no linealidades del episodio COVID sin contaminar la relación de equilibrio.
+
+\medskip
+Este pre-procesado garantiza que (i) las variables \emph{I(1)} comparten una relación de equilibrio interpretable, (ii) las \emph{I(0)} se incorporan en niveles en la dinámica de corto plazo, y (iii) los choques empíricos $s_t$ son coherentes con la construcción del riesgo externo que se utilizará más adelante.
+
+% ===================================================
+\section{Especificación y estimación del VECM}
+% ===================================================
+
+\subsection{Modelo}
+
+Sea $z_t \in \mathbb{R}^{m}$ el vector de variables \emph{I(1)} que incluye el PIB real (en log) y los factores externos con raíz unitaria (p.\,ej., términos de intercambio y tipo a 10 años de EE.\,UU.). Denotemos por $x_t \in \mathbb{R}^{q}$ el vector de variables \emph{I(0)} (p.\,ej., spreads de riesgo, IP\_G7 en log, dummies). El \textit{VECM} de orden $p$ se escribe como:
+\begin{equation}
+\Delta z_t
+\;=\;
+\underbrace{\alpha \beta^\top}_{\Pi}\, z_{t-1}
+\;+\;
+\sum_{i=1}^{p-1} \Gamma_i\, \Delta z_{t-i}
+\;+\;
+\Theta\, x_t
+\;+\;
+\mu
+\;+\;
+\varepsilon_t,
+\qquad
+\varepsilon_t \sim \text{i.i.d. } (0,\Sigma_\varepsilon),
+\label{eq:vecm_system}
+\end{equation}
+donde $\alpha \in \mathbb{R}^{m \times r}$ y $\beta \in \mathbb{R}^{m \times r}$ con $r$ el rango de cointegración ($0<r<m$), $\Pi=\alpha\beta^\top$ recoge la dinámica de corrección al equilibrio de largo plazo, y $\Gamma_i$ los coeficientes de corto plazo. La matriz $\Theta$ contiene los efectos contemporáneos de las variables estacionarias $x_t$ y $\mu$ representa determinísticos (constante y, opcionalmente, tendencia restringida/no restringida según el caso).
+
+La ecuación específica del PIB (en log), $y_t$, toma la forma de \textbf{ECM uniecuacional}:
+\begin{equation}
+\Delta y_t
+\;=\;
+\alpha_y\, \underbrace{\vphantom{\sum}\beta^\top z_{t-1}}_{\displaystyle ECT_{t-1}}
+\;+\;
+\sum_{i=1}^{p-1} \gamma_{y,i}^\top \Delta z_{t-i}
+\;+\;
+\delta_y^\top x_t
+\;+\;
+\mu_y
+\;+\;
+\varepsilon_{y,t},
+\label{eq:ecm_y}
+\end{equation}
+donde $ECT_{t}=\beta^\top z_t$ es el término de corrección del error (desvío respecto al equilibrio), $\alpha_y$ es la \emph{velocidad de ajuste} del PIB, $\gamma_{y,i}$ capturan inercias de corto plazo y $\delta_y$ los efectos contemporáneos de $x_t$ (p.\,ej., spread en niveles, IP\_G7 en log, dummies COVID).
+
+\paragraph{Determinísticos y dummies.}
+La inclusión de $\mu$ y, en su caso, tendencia, sigue la taxonomía estándar (determinísticos en $ECT_t$ y/o en las ecuaciones). Dummies como $D^{\text{crash}}_t$ y $D^{\text{rec}}_t$ se incorporan en $x_t$ para absorber no linealidades (COVID) sin distorsionar la relación de largo plazo.
+
+\subsection{Selección de rezagos y restricciones}
+
+El orden $p$ del sistema se fija con \textbf{criterios de información} (AIC, SBIC, HQ) y verificación de autocorrelación residual (test Portmanteau/Ljung--Box sobre $\varepsilon_t$). El \textbf{rango de cointegración} $r$ se determina con el procedimiento de Johansen (estadísticos de traza y máximo eigenvalor) condicionado a la especificación de determinísticos. Las \textbf{restricciones} sobre $\beta$ (signos, exclusiones) pueden imponerse para garantizar interpretabilidad económica y estabilidad:
+\begin{itemize}
+  \item \emph{Constante/tendencia}: restringidas o no restringidas en $\beta$ según evidencia empírica.
+  \item \emph{Exogeneidad débil}: para algunos componentes de $z_t$ (p.\,ej., factores externos), puede testearse si sus filas en $\alpha$ son nulas; en ese caso su dinámica de corrección no entra en esas ecuaciones.
+  \item \emph{Dummies/eventos}: se incluyen en $x_t$ con parámetros libres $\delta$; no afectan a $\beta$ salvo que se modele una rotura de régimen explícita.
+\end{itemize}
+La especificación final es la que minimiza el criterio elegido, elimina autocorrelación remanente y ofrece un $ECT_t$ estable y económicamente interpretable.
+
+\subsection{Estimación y diagnóstico}
+
+\paragraph{Estimación.}
+\begin{enumerate}
+  \item \textbf{Cointegración} ($\beta$ y $\alpha$): estimación por \emph{máxima verosimilitud} de Johansen para el sistema en \eqref{eq:vecm_system}, dado $p$ y la clase de determinísticos.
+  \item \textbf{Ecuaciones de corto plazo}: una vez fijados $\beta$ y $ECT_t$, las ecuaciones individuales (p.\,ej., \eqref{eq:ecm_y}) se estiman por MCO o SUR; alternativamente, se mantiene la estimación sistémica ML para coherencia con $\Sigma_\varepsilon$.
+\end{enumerate}
+
+\paragraph{Diagnóstico.}
+Se evalúa la adecuación mediante:
+\begin{itemize}
+  \item \textbf{Autocorrelación}: test Portmanteau/Ljung--Box sobre residuos y sobre residuos al cuadrado (ARCH LM).
+  \item \textbf{Normalidad}: test de Jarque--Bera (o Doornik--Hansen) aplicado a residuos univariantes y multivariantes.
+  \item \textbf{Heterocedasticidad}: test de White/Breusch--Pagan en cada ecuación.
+  \item \textbf{Estabilidad}: raíces del polinomio característico del VAR en niveles equivalente (todas dentro del círculo unitario). En presencia de $r>0$, verificar estabilidad de la representación en forma reducida con $\Pi=\alpha\beta^\top$.
+\end{itemize}
+Adicionalmente, se reportan \textbf{estadísticos de significancia} de $\alpha_y$ y de los coeficientes de $x_t$ relevantes en la ecuación del PIB, así como \textbf{bondad de ajuste} (pseudo-$R^2$) y \textbf{pruebas de especificación} (exogeneidad débil, sobreidentificación de restricciones en $\beta$).
+
+\paragraph{Salida para el indicador.}
+De la estimación se retienen: (i) el \textbf{ECT} y su \textbf{coeficiente de ajuste} $\alpha_y$ (y rezagos, si se incluyen), para construir la contribución determinística $\mu_t$; (ii) las \textbf{IRFs} del PIB a shocks externos coherentes con el VECM (para obtener $g(H)$, la carga acumulada a horizonte $H$); y (iii) las \textbf{series de shocks empíricos} para estimar la covarianza rolling $\Sigma_t$. Estos elementos alimentan, en secciones posteriores, la construcción del riesgo $\sigma_t$ y del índice final de vulnerabilidad.
+% ===================================================
+\section{Relación de largo plazo y término de corrección (ECT)}
+% ===================================================
+
+\subsection{Vector(es) de cointegración}
+
+Sea $z_t \in \mathbb{R}^m$ el vector de variables \emph{I(1)} (incluyendo el PIB real en log y los factores externos con raíz unitaria). 
+Si el rango de cointegración es $r \in \{1,\dots,m-1\}$, existen $r$ combinaciones lineales estacionarias:
+\begin{equation}
+\label{eq:ect_def}
+ECT_t \;\equiv\; \beta^\top z_t \;+\; d_t,
+\qquad
+\beta \in \mathbb{R}^{m \times r},
+\end{equation}
+donde $d_t$ recoge determinísticos que puedan pertenecer a la relación de equilibrio (constante y, opcionalmente, tendencia restringida). 
+Para $r=1$ (caso típico en esta aplicación), escribimos
+\[
+ECT_t \;=\; \beta_0 \;+\; \sum_{j=1}^m \beta_j\, z_{j,t},
+\]
+con $\beta_0$ constante de equilibrio y coeficientes $\beta_j$ que miden \emph{elasticidades de largo plazo} (interpretables tras una normalización).
+
+\paragraph{Normalización e interpretación.}
+La vectorización de Johansen identifica $\beta$ hasta transformaciones no singulares. 
+Para interpretar signos y magnitudes, se fija una \textbf{normalización} económica (p.\,ej., sobre el PIB $y_t$):
+\[
+ECT_t \;=\; y_t \;-\; \Big( \beta_0^\star \;+\; \sum_{j \neq y} \beta_j^\star\, z_{j,t} \Big).
+\]
+Con esta normalización, $\beta_j^\star$ se interpreta como la \textbf{elasticidad de equilibrio de largo plazo} de $y_t$ respecto a $z_{j,t}$.
+Si $\beta_j^\star > 0$, niveles más altos de $z_{j,t}$ justifican un $y_t$ de equilibrio mayor (y viceversa).
+
+\paragraph{Determinísticos en la relación de equilibrio.}
+La inclusión de una constante (y, si procede, una tendencia restringida) en $ECT_t$ permite absorber medias o derivas de equilibrio. 
+La decisión (constante en $ECT$ vs.\ constante en las ecuaciones) se toma según la taxonomía estándar de determinísticos en VECM y la evidencia empírica (tests de Johansen bajo cada caso).
+
+\paragraph{Caso $r>1$.}
+Si $r>1$, $ECT_t \in \mathbb{R}^r$ apila los $r$ vectores; la ecuación del PIB puede depender de varias brechas de equilibrio. 
+En esta aplicación se trabaja con $r=1$ por parsimonia y claridad interpretativa.
+
+\subsection{Contribución determinística de corto plazo}
+
+La \textbf{corrección al equilibrio} entra en la ecuación del PIB a través del (los) coeficiente(s) de ajuste. 
+Sea $L^\star \ge 1$ el número de rezagos del ECT que resultan significativos/útiles en la estimación empírica. Definimos:
+\begin{equation}
+\label{eq:mu_def}
+\mu_t 
+\;\equiv\;
+\sum_{\ell=1}^{L^\star} \alpha_{y,\ell} \, ECT_{t-\ell},
+\end{equation}
+donde $\alpha_{y,\ell}$ son las velocidades de ajuste estimadas para la ecuación del PIB. 
+La cantidad $\mu_t$ resume el \textbf{empuje determinístico} que el equilibrio ejerce sobre el crecimiento a corto plazo: 
+si $\mu_t<0$, el sistema ``pide'' corregir a la baja; si $\mu_t>0$, hay colchón de recuperación. 
+En el caso más parsimonioso ($L^\star=1$), $\mu_t=\alpha_{y,1}\,ECT_{t-1}$.
+
+\paragraph{Relación con la dinámica completa.}
+La ecuación de crecimiento del PIB (ECM) incluye, además, términos de corto plazo $\sum_{i=1}^{p-1} \gamma_{y,i}^\top \Delta z_{t-i}$ y efectos de variables \emph{I(0)} (p.\,ej., spreads, IP\_G7) vía $\delta_y^\top x_t$. 
+Aquí aislamos $\mu_t$ como la parte \emph{vinculada al equilibrio de largo plazo}, que será la pieza determinística del indicador de vulnerabilidad.
+
+\paragraph{Elección de $L^\star$.}
+Se fija con criterios empíricos:
+(i) significancia de $\alpha_{y,\ell}$, 
+(ii) mejora de diagnóstico de residuos y 
+(iii) estabilidad de la señal $\mu_t$. 
+Por defecto, se emplea $L^\star=1$ salvo evidencia a favor de incluir más rezagos.
+
+
+% ===================================================
+\section{IRFs y sensibilidad agregada al horizonte}
+% ===================================================
+
+\subsection{Funciones impulso--respuesta del PIB}
+
+Partimos del VECM estimado en \eqref{eq:vecm_system}. Su representación VAR en niveles existe y es estable en el subespacio estacionario:\footnote{Con $r>0$, el VAR en niveles equivalente se obtiene a partir de la parametrización $\Pi=\alpha\beta^\top$ y los coeficientes de corto plazo.}
+\begin{equation}
+z_t
+=
+A_1 z_{t-1} + \cdots + A_p z_{t-p} + B x_t + u_t,
+\qquad
+u_t \sim (0,\Sigma_u),
+\label{eq:var_levels}
+\end{equation}
+de donde se deriva la representación de medias móviles (MA):
+\begin{equation}
+z_t
+=
+\mu + \sum_{h=0}^{\infty} \Psi_h\, u_{t-h},
+\qquad
+\Psi_0 = I,\ \ \Psi_h = A_1 \Psi_{h-1} + \cdots + A_p \Psi_{h-p}.
+\label{eq:ma_representation}
+\end{equation}
+
+Sea $y_t$ el PIB (log) como primera componente de $z_t$. La \textbf{IRF} del PIB al \emph{shock} $j$ en el horizonte $h$ es la $1$-era entrada de la matriz $\Psi_h$ multiplicada por la innovación en $j$:
+\[
+\text{IRF}_{y \leftarrow j}(h)
+\;=\;
+\mathbf{e}_1^\top \Psi_h\, \mathbf{d}_j,
+\]
+donde $\mathbf{e}_1$ es el selector de la ecuación del PIB y $\mathbf{d}_j$ caracteriza el tipo de shock. Hay dos opciones habituales de identificación:
+
+\begin{itemize}
+  \item \textbf{IRFs ortogonalizadas (Cholesky).} Se factoriza $\Sigma_u = P P^\top$ y se definen innovaciones ortogonales $\varepsilon_t = P^{-1} u_t$ con varianzas unitarias. Entonces $\mathbf{d}_j = P\, \mathbf{e}_j$ y la respuesta es
+  \[
+  \text{IRF}^{\text{chol}}_{y \leftarrow j}(h) = \mathbf{e}_1^\top \Psi_h P\, \mathbf{e}_j,
+  \]
+  con dependencia del ordenamiento de variables en $z_t$.
+
+  \item \textbf{IRFs generalizadas (GIRFs, Pesaran--Shin).} Evitan el problema del ordenamiento. Para un shock de una desviación típica en la variable $j$:
+  \[
+  \text{IRF}^{\text{gen}}_{y \leftarrow j}(h)
+  =
+  \frac{ \mathbf{e}_1^\top \Psi_h \Sigma_u \mathbf{e}_j }{ \sqrt{ \mathbf{e}_j^\top \Sigma_u \mathbf{e}_j } }.
+  \]
+\end{itemize}
+
+En aplicación macro, fijamos el tamaño del shock en \emph{unidades económicas} leyendo la escala de cada variable:
+\begin{itemize}
+  \item ToT e IP\_G7 en log: shocks de \(+1\%\) (i.e., \(0.01\) en log).
+  \item US10Y y \emph{spread} en niveles: shocks de \(+100\) puntos básicos.
+\end{itemize}
+Si se emplean GIRFs (estandarizadas), se reescala la respuesta multiplicando por el tamaño deseado del shock en las unidades de cada serie.
+
+\paragraph{Coherencia con I(1)/I(0).}
+Para variables \emph{I(1)} (ToT, US10Y) el VAR en niveles induce respuestas con componente permanente; para \emph{I(0)} (spread, IP\_G7) la respuesta se extingue. Esta distinción es relevante para la lectura económica y, más adelante, para alinear shocks empíricos \(s_t\) (diferencias para I(1), niveles para I(0)) con las IRFs del PIB.
+
+\subsection{Carga acumulada a un horizonte $H$}
+
+Sea $k$ el número de shocks externos considerados (p.\,ej., ToT, US10Y, spread). Definimos la \textbf{carga acumulada} del PIB al shock $j$ en el horizonte $H$ como la suma de respuestas de corto plazo:
+\begin{equation}
+g_j(H)
+\;\equiv\;
+\sum_{h=1}^{H} \text{IRF}_{y \leftarrow j}(h),
+\qquad
+j = 1,\ldots,k.
+\label{eq:g_component}
+\end{equation}
+Apilando los $k$ elementos obtenemos el vector de sensibilidades:
+\begin{equation}
+\vect{g}(H)
+=
+\begin{bmatrix}
+g_1(H) \\ \vdots \\ g_k(H)
+\end{bmatrix}
+\in \mathbb{R}^{k}.
+\label{eq:g_vector}
+\end{equation}
+
+\paragraph{Interpretación.}
+$g_j(H)$ es la \emph{elasticidad acumulada del PIB} ante un shock de tamaño prefijado en la variable $j$ a \(H\) trimestres vista. 
+Este vector sintetiza, para el horizonte operativo del indicador, \emph{cuánto} se traslada la volatilidad de cada shock al crecimiento del PIB.
+
+\paragraph{Consistencia de unidades (clave para el riesgo).}
+Como en la sección de datos definimos los shocks empíricos
+\[
+s_t \equiv \big(\Delta \text{ToT}_t,\ \Delta \text{US10Y}_t,\ \text{Spread}_t,\ \ldots \big)^\top,
+\]
+las IRFs deben leerse con el \emph{mismo} criterio de unidades: el tamaño de shock usado para construir $g(H)$ debe ser consistente con las unidades de $s_t$ (p.\,ej., \(+1\%\) en log para ToT, \(+100\) bps para tipos/spreads). Esta alineación asegura que, más adelante, la varianza agregada
+\(
+\sigma_t = \sqrt{ \vect{g}(H)^\top \Sigma_t\, \vect{g}(H) }
+\)
+mida el riesgo del PIB en unidades comparables.
+
+\paragraph{Receta práctica.}
+\begin{enumerate}
+  \item Estimar $\Psi_h$ (o usar rutinas del paquete econométrico) y generar IRFs del PIB para cada shock \(j\) en \(h=1,\dots,H\), con el tamaño de shock fijado en unidades económicas.
+  \item Sumar en el horizonte para obtener $g_j(H)$ según \eqref{eq:g_component}.
+  \item Formar $\vect{g}(H)$ como en \eqref{eq:g_vector} y conservarlo para la sección de riesgo externo y para la construcción del índice.
+\end{enumerate}
+
+% ===================================================
+\section{Riesgo externo vigente: matriz de covarianzas rolling}
+% ===================================================
+
+\subsection{Definición de shocks empíricos}
+
+Sea $s_t \in \mathbb{R}^{k}$ el vector de \emph{shocks} externos alineado con las IRFs del PIB y con el criterio de integración de cada serie:
+\begin{equation}
+\label{eq:shocks_def}
+s_t 
+\;=\;
+\big(
+\Delta \text{ToT}_t,\;
+\Delta \text{US10Y}_t,\;
+\text{Spread}_t,\;
+[\Delta \text{IP\_G7}_t],\ldots
+\big)^\top,
+\end{equation}
+donde las variables \emph{I(1)} se expresan en diferencias y las \emph{I(0)} en niveles.\footnote{Esta convención asegura coherencia de unidades entre los shocks empíricos y el tamaño de shock utilizado para construir las IRFs del PIB.}
+El índice $t$ es trimestral y hereda la indexación común definida en la sección de datos.
+
+\paragraph{Escala y unidades.}
+Para ToT e IP\_G7 (en log) usamos diferencias logarítmicas; para tipos y \emph{spreads} en niveles usamos diferencias de primer orden si son \emph{I(1)} y niveles si son \emph{I(0)}. 
+Las unidades elegidas (p.\,ej., \(0{.}01\) para \(+1\%\), \(100\) para \(+100\) bps) deben ser consistentes con las IRFs del PIB empleadas en la sección anterior.
+
+\subsection{Matriz de covarianzas condicional \texorpdfstring{$\Sigma_t$}{Σ\_t}}
+
+El riesgo externo vigente se captura con la covarianza muestral de $s_t$ en una ventana móvil de longitud $W$:
+\begin{equation}
+\label{eq:Sigma_roll}
+\Sigma_t
+\;=\;
+\widehat{\Cov}\!\left(s_{t-W+1},\ldots,s_t\right)
+\;=\;
+\frac{1}{W-1}\sum_{\tau=t-W+1}^{t}\left(s_\tau-\bar{s}_t\right)\left(s_\tau-\bar{s}_t\right)^\top,
+\qquad
+\bar{s}_t=\frac{1}{W}\sum_{\tau=t-W+1}^{t}s_\tau.
+\end{equation}
+
+\paragraph{Elección de ventana ($W$).}
+$W$ controla el compromiso \emph{sesgo--varianza}: ventanas más largas estabilizan la estimación a costa de menos adaptabilidad; ventanas más cortas capturan cambios rápidos a costa de mayor ruido. En práctica trimestral, $W\in[32,60]$ (8--15 años) suele ofrecer un equilibrio razonable.
+
+\paragraph{Alternativas de suavizado.}
+Puede emplearse un promedio ponderado exponencial (EWMA) con factor de decaimiento $\lambda\in(0,1)$:
+\[
+\Sigma^{\text{EWMA}}_t=\lambda\,\Sigma^{\text{EWMA}}_{t-1}+(1-\lambda)\,(s_t-\E_{t-1}s_t)(s_t-\E_{t-1}s_t)^\top,
+\]
+o técnicas de \emph{shrinkage} (Ledoit--Wolf) hacia una matriz objetivo diagonal para mejorar la condición numérica.
+
+\subsection{Cuantificación del riesgo del PIB}
+
+Dada la sensibilidad acumulada del PIB a cada shock en el horizonte $H$, $\vect{g}(H)\in\mathbb{R}^{k}$ (sección anterior), definimos el \textbf{riesgo agregado} para el PIB como:
+\begin{equation}
+\label{eq:sigma_def}
+\sigma_t
+\;\equiv\;
+\sqrt{\;\vect{g}(H)^\top \,\Sigma_t\, \vect{g}(H)\;}
+\;\;\in\;\R_{\ge 0}.
+\end{equation}
+La cantidad $\sigma_t$ es una desviación típica \emph{horizonte-específica} del crecimiento del PIB inducida por la combinación reciente de volatilidades y comovimientos de los shocks externos, ponderados por la transmisión del modelo.
+
+\paragraph{Propiedades y notas numéricas.}
+\begin{itemize}
+  \item \textbf{No negatividad y PSD.} Por construcción, si $\Sigma_t$ es semidefinida positiva, entonces $\sigma_t\ge 0$. En muestras pequeñas o con colinealidad, la estimación muestral puede perder la propiedad PSD por redondeos; en tal caso, \emph{proyectar} $\Sigma_t$ al cono PSD (p.\,ej., truncando autovalores negativos a cero) o aplicar \emph{shrinkage} resuelve la inestabilidad.
+  \item \textbf{Consistencia de unidades.} La homogeneidad de grados en \eqref{eq:sigma_def} exige que el tamaño de shock implícito en $\vect{g}(H)$ coincida con las unidades de $s_t$. Si se usaron GIRFs estandarizadas, reescalar $g_j(H)$ al tamaño económico deseado.
+  \item \textbf{Mínimos muestrales.} Exigir $W \ge k+2$ observaciones efectivas (tras \emph{diffs}) y descartar ventanas con NA's asegura invertibilidad numérica y reduce varianzas espurias.
+  \item \textbf{Robustez a outliers.} En presencia de episodios extremos (p.\,ej., COVID), puede emplearse una covarianza robusta (MCD) o ventanas con \emph{trimming} suave; no obstante, conviene \emph{no} suprimir por defecto la señal de estrés si el objetivo es medir vulnerabilidad.
+\end{itemize}
+
+\paragraph{Lectura económica.}
+Un aumento de $\sigma_t$ indica que, dado el canal de transmisión del modelo, el entorno externo se ha vuelto más incierto o más correlacionado de forma adversa. En el indicador final, $\sigma_t$ actúa (i) como \emph{denominador} del cociente señal--ruido (ESD) y (ii) como \emph{amplificador} adicional del nivel de vulnerabilidad cuando el mar externo está especialmente agitado.
+
+
+% ===================================================
+\section{Índice de vulnerabilidad: definición formal}
+% ===================================================
+
+\subsection{Núcleo ``señal en sigmas''}
+
+Sea $\mu_t$ la contribución determinística del equilibrio al crecimiento del PIB (sección anterior), y $\sigma_t$ el riesgo externo vigente a horizonte $H$:
+\[
+\mu_t \equiv \sum_{\ell=1}^{L^\star} \alpha_{y,\ell}\, ECT_{t-\ell},
+\qquad
+\sigma_t \equiv \sqrt{\;\vect{g}(H)^\top \Sigma_t\, \vect{g}(H)\;}.
+\]
+Definimos la razón \emph{señal--ruido} como:
+\begin{equation}
+\label{eq:esd}
+ESD_t \;\equiv\; -\,\frac{\mu_t}{\sigma_t}.
+\end{equation}
+El signo está fijado para que $ESD_t$ \emph{aumente} cuando el empuje del equilibrio sea \emph{contractivo} (i.e., $\mu_t<0$) y/o cuando el denominador (riesgo) sea \emph{bajo}, lo que refuerza la ``señal en sigmas''.
+
+\paragraph{Propiedades.}
+\begin{itemize}
+  \item \textbf{Interpretación directa:} $|ESD_t|$ mide cuántas desviaciones típicas del riesgo vigente representa el empuje de equilibrio. 
+  \item \textbf{Monotonicidad en $\mu_t$:} si $\sigma_t$ fijo, $ESD_t$ crece estrictamente al hacerse más negativo $\mu_t$.
+  \item \textbf{Homogeneidad de grado cero en escalas de $s_t$:} un reescalado común de $s_t$ (y, por consistencia, de \(\vect{g}(H)\)) deja $ESD_t$ invariante.
+\end{itemize}
+
+\subsection{Amplificador de riesgo \texorpdfstring{$f(\sigma)$}{f(sigma)}}
+
+Con el fin de penalizar episodios en los que el entorno externo está \emph{extraordinariamente incierto}, introducimos un factor multiplicativo creciente en $\sigma_t$:
+\begin{equation}
+\label{eq:amp}
+f(\sigma_t)
+\;=\;
+\left(\frac{\sigma_t}{\sigma_{\text{ref}}}\right)^{\lambda},
+\qquad
+\lambda \ge 0,
+\qquad
+\sigma_{\text{ref}} \in \{\text{mediana}(\sigma),\ \text{percentil 60--70}\}.
+\end{equation}
+La normalización por $\sigma_{\text{ref}}$ asegura \textbf{invarianza de escala} y estabiliza la lectura temporal. 
+El exponente $\lambda$ controla la intensidad del castigo por ``mar picado'': $\lambda=0$ implica \emph{sin} amplificador; $\lambda=1$ un castigo proporcional.
+
+\paragraph{Comentarios prácticos.}
+\begin{itemize}
+  \item Elegir $\sigma_{\text{ref}}$ como mediana minimiza la influencia de colas.
+  \item Valores típicos: $\lambda \in [0.5,1]$. En análisis de robustez se reportan sensibilidades a $\lambda$ y al horizonte $H$.
+\end{itemize}
+
+\subsection{Índice final}
+
+Definimos el indicador de vulnerabilidad como:
+\begin{equation}
+\label{eq:index_final}
+V_t 
+\;\equiv\; 
+\left(-\,\frac{\mu_t}{\sigma_t}\right)\, f(\sigma_t)
+\;=\;
+ESD_t \times f(\sigma_t).
+\end{equation}
+
+\paragraph{Propiedades.}
+\begin{itemize}
+  \item \textbf{Comparabilidad temporal:} la división por $\sigma_t$ y la normalización de $f(\sigma_t)$ por $\sigma_{\text{ref}}$ hacen que $V_t$ sea comparable a lo largo del tiempo bajo cambios moderados de escala en $s_t$.
+  \item \textbf{Monotonicidad conjunta:} para $\lambda \ge 0$, $V_t$ aumenta cuando $\mu_t$ se hace más contractivo (más negativo) y (dado $\mu_t<0$) cuando $\sigma_t$ crece por encima de $\sigma_{\text{ref}}$, reflejando que, en mares agitados, un mismo empuje contractivo es más preocupante.
+  \item \textbf{Límites:} si $\sigma_t \to 0^+$, $ESD_t$ puede inflarse; en práctica se impone un \emph{floor} numérico $\sigma_t \leftarrow \max(\sigma_t,\varepsilon)$, con $\varepsilon$ pequeño. Si $\mu_t \approx 0$, $V_t \approx 0$ (baja vulnerabilidad pese a riesgo alto).
+\end{itemize}
+
+\subsection{Clasificación de episodios}
+
+Para comunicar la señal de forma operativa, clasificamos episodios mediante umbrales por percentiles de la distribución histórica de $V_t$:
+\[
+\text{Verde}: V_t \le P_{50},\qquad
+\text{Amarillo}: P_{50} < V_t \le P_{75},\qquad
+\text{Naranja}: P_{75} < V_t \le P_{90},\qquad
+\text{Rojo}: V_t > P_{90}.
+\]
+Alternativamente, pueden emplearse reglas adaptativas (p.\,ej., percentiles sobre una ventana móvil) o \emph{bandas} con histéresis para reducir saltos de estado de corta duración. 
+En las figuras se representa además el umbral $P_{75}$ como línea discontinua y se sombrean los periodos en \emph{Naranja/Rojo}.
+
+% ===================================================
+\section{Atribución y lectura económica}
+% ===================================================
+
+\subsection{Descomposición de \texorpdfstring{$\mu_t$}{mu\_t} por variables del equilibrio}
+
+Recordemos la definición (sección previa):
+\[
+\mu_t \;=\; \sum_{\ell=1}^{L^\star} \alpha_{y,\ell}\, ECT_{t-\ell},
+\qquad
+ECT_t \;=\; \beta_0 \;+\; \sum_{j=1}^{m} \beta_j\, z_{j,t}.
+\]
+Sustituyendo,
+\begin{equation}
+\label{eq:mu_decomp}
+\mu_t
+\;=\;
+\underbrace{\Big(\sum_{\ell=1}^{L^\star} \alpha_{y,\ell}\Big)}_{\displaystyle \alpha^{(\Sigma)}}
+\beta_0
+\;+\;
+\sum_{j=1}^{m}
+\Bigg[\;
+\underbrace{\sum_{\ell=1}^{L^\star} \alpha_{y,\ell}\, \beta_j\, z_{j,t-\ell}}_{\displaystyle \text{Contribución de } z_j \text{ a } \mu_t}
+\;\Bigg].
+\end{equation}
+
+\paragraph{Contribuciones por variable y por rezago.}
+Definimos la contribución puntual de la variable \(z_j\) en el rezago \(\ell\) como
+\[
+\mu_{t}^{(j,\ell)} \;\equiv\; \alpha_{y,\ell}\, \beta_j\, z_{j,t-\ell},
+\qquad
+\mu_t \;=\; \alpha^{(\Sigma)}\beta_0 \;+\; \sum_{j=1}^{m}\sum_{\ell=1}^{L^\star} \mu_t^{(j,\ell)}.
+\]
+Esto permite tabular y graficar, para cada fecha \(t\), qué parte de la presión de corrección (\(\mu_t\)) proviene de cada \emph{fundamental} y de qué rezago del ECT.
+
+\paragraph{Lectura económica.}
+\begin{itemize}
+  \item \(\beta_j>0\) y \(z_{j,t-\ell}\) por encima de su nivel de equilibrio elevan \(ECT\) y, con \(\alpha_{y,\ell}<0\), tienden a \emph{reducir} \(\mu_t\) (más contractivo).
+  \item \(\beta_j<0\) invierte la interpretación: un \(z_j\) alto puede implicar menor \(ECT\) y, por tanto, \(\mu_t\) menos contractivo.
+  \item El término constante \(\alpha^{(\Sigma)}\beta_0\) fija un \emph{sesgo} promedio del empuje (útil para entender medias históricas de \(\mu_t\)).
+\end{itemize}
+
+\paragraph{Reporte práctico.}
+Se recomiendan tres resúmenes para comunicación: media histórica, percentil alto (p95) y último dato de \(\mu_t^{(j,\ell)}\) (o de \(\sum_\ell \mu_t^{(j,\ell)}\) por variable), junto con barras apiladas que muestren la suma en el tiempo.
+
+% ---------------------------------------------------
+
+\subsection{Descomposición de \texorpdfstring{$\sigma_t^2$}{sigma\_t^2} por shocks}
+
+Sea \(\vect{g}(H)\in\mathbb{R}^{k}\) el vector de sensibilidades acumuladas y \(\Sigma_t\in\mathbb{R}^{k\times k}\) la covarianza rolling de los shocks \(s_t\). Tenemos
+\[
+\sigma_t^2 \;=\; \vect{g}(H)^\top \Sigma_t\, \vect{g}(H).
+\]
+Denotemos \(g_i \equiv g_i(H)\), \(\Sigma_{ij}(t)\) los elementos de \(\Sigma_t\). Entonces
+\begin{equation}
+\label{eq:sigma_quad}
+\sigma_t^2
+\;=\;
+\sum_{i=1}^{k} g_i^2\, \Sigma_{ii}(t)
+\;+\;
+2\sum_{1\le i<j\le k} g_i g_j\, \Sigma_{ij}(t).
+\end{equation}
+
+\paragraph{Atribución ``tipo Shapley'' (simétrica) por shock.}
+Sea
+\[
+\underbrace{V_i(t)}_{\text{varianza propia}}
+\;=\;
+g_i^2\, \Sigma_{ii}(t),
+\qquad
+\underbrace{C_{ij}(t)}_{\text{covarianza cruzada}}
+\;=\;
+g_i g_j\, \Sigma_{ij}(t).
+\]
+Asignamos cada término de covarianza equitativamente a sus dos participantes. La \textbf{contribución} del shock \(i\) a \(\sigma_t^2\) es:
+\begin{equation}
+\label{eq:shapley_like}
+c_i(t)
+\;=\;
+V_i(t)
+\;+\;
+\sum_{j\neq i} C_{ij}(t),
+\qquad
+\sum_{i=1}^{k} c_i(t) \;=\; \sigma_t^2.
+\end{equation}
+Obsérvese que, como \(C_{ij}=C_{ji}\), el reparto \(50\text{--}50\) garantiza \(\sum_i c_i=\sigma_t^2\).
+
+\paragraph{Shares y señal.}
+Definimos \(\text{share}_i(t) \equiv c_i(t)/\sigma_t^2\) cuando \(\sigma_t^2>0\). En presencia de covarianzas negativas marcadas, algún \(c_i(t)\) puede ser pequeño o incluso negativo: ello indica que el shock \(i\) \emph{amortigua} el riesgo agregado dadas las correlaciones del periodo.
+
+\paragraph{Lectura económica.}
+\begin{itemize}
+  \item \(V_i(t)\) recoge la contribución por \emph{volatilidad propia} del shock \(i\) ponderada por su transmisión \(g_i\).
+  \item \(\sum_{j\ne i} C_{ij}(t)\) recoge el \emph{efecto de sincronía} (comovimientos) entre \(i\) y el resto: covarianzas positivas elevan \(c_i\), negativas lo reducen.
+  \item Comparar \(\text{share}_i(t)\) entre fechas identifica \emph{cambios de régimen} en la fuente de riesgo dominante (p.\,ej., pasar de ``financiero'' a ``comercial'').
+\end{itemize}
+
+\paragraph{Reporte práctico.}
+Se sugiere presentar (i) una figura de \(\sigma_t\) con bandas de episodios, (ii) un \emph{stacked area} de \(\text{share}_i(t)\) y (iii) una tabla con \(\overline{c_i}\) (media), \(c_i\) en percentiles altos (p90/p95) y el último dato. Esto facilita entender \emph{qué shock} explica el aumento del riesgo en cada episodio.
+
+\paragraph{Caveats numéricos.}
+\begin{itemize}
+  \item Si \(\Sigma_t\) no es PSD por error muestral, realizar proyección al cono PSD antes de computar \eqref{eq:shapley_like}.
+  \item En ventanas cortas, los \(\text{share}_i(t)\) pueden ser volátiles; usar \(W\) razonable y/o un suavizado (EWMA) ayuda a la estabilidad sin borrar señales.
+\end{itemize}
+
+% ===================================================
+\section{Robustez y extensiones}
+% ===================================================
+
+\subsection{Sensibilidades a \texorpdfstring{$H$}{H}, ventana \texorpdfstring{$W$}{W} y \texorpdfstring{$\lambda$}{lambda}}
+
+La construcción del índice involucra tres hiperparámetros: el horizonte de análisis $H$ (que define $\vect{g}(H)$), la longitud de la ventana $W$ para la covarianza $\Sigma_t$, y el exponente del amplificador de riesgo $\lambda$:
+\[
+V_t(H,W,\lambda) \;=\; \Big(-\mu_t/\sigma_t(H,W)\Big)\;\cdot\;\Big(\sigma_t(H,W)/\sigma_{\text{ref}}\Big)^{\lambda}.
+\]
+
+\paragraph{Rangos razonables y motivación.}
+\begin{itemize}
+  \item \textbf{Horizonte} $H$: trimestralmente, $H\in\{4,8\}$ (1--2 años). 
+  $H$ mayores incorporan persistencias pero diluyen señales rápidas; $H$ pequeños enfatizan impactos inmediatos.
+  \item \textbf{Ventana} $W$: típico $W\in[32,60]$ (8--15 años). 
+  $W$ grandes estabilizan $\Sigma_t$; $W$ pequeños capturan cambios de régimen con mayor ruido.
+  \item \textbf{Exponente} $\lambda$: usual $\lambda\in[0,1]$. 
+  $\lambda=0$ elimina el amplificador; $\lambda>1$ penaliza fuertemente mares muy agitados (no recomendado salvo aplicaciones tácticas).
+\end{itemize}
+
+\paragraph{Diseño de experimentos.}
+\begin{enumerate}
+  \item \textbf{Grid corto:} $H\in\{4,8\}$, $W\in\{32,48,60\}$, $\lambda\in\{0,0.5,1\}$.
+  \item \textbf{Métricas de estabilidad:} correlación de Spearman entre $V_t$ base y sus variantes; coincidencia de episodios (p75/p90); varianza relativa.
+  \item \textbf{Validez económica:} signo y timing de la correlación con $\Delta y_{t+1}$ fuera de COVID; consistencia de atribución (¿cambia el shock dominante?).
+\end{enumerate}
+
+\paragraph{Reporte sugerido.}
+Una figura tipo \emph{spider/heatmap} con la correlación \(\rho\big(V_t(H,W,\lambda), V_t^{\text{base}}\big)\) y una tabla de \emph{hit rates} de episodios (cuántos periodos Naranja/Rojo persisten frente al caso base).
+
+\subsection{Tratamiento de episodios atípicos}
+
+\paragraph{Episodios COVID y grandes outliers.}
+\begin{itemize}
+  \item \textbf{En la ecuación}: incorporar dummies $D^{\text{crash}}_t$, $D^{\text{rec}}_t$ en $x_t$ evita que el ECT absorba no linealidades transitorias.
+  \item \textbf{En la covarianza}: mantener $\Sigma_t$ factual para reflejar el estrés (no winsorizar por defecto). 
+  Opcionalmente, para análisis de \emph{baseline}, estimar $\Sigma_t$ con ventana que excluya 2020T2--2021T2 y comparar.
+\end{itemize}
+
+\paragraph{Opciones robustas.}
+\begin{itemize}
+  \item \textbf{EWMA} con factor de decaimiento ($\lambda_{\text{EWMA}}\in[0.92,0.98]$) para capturar cambios graduales.
+  \item \textbf{Shrinkage} (Ledoit--Wolf) hacia diagonal: mejora condición numérica y evita eigenvalores negativos.
+  \item \textbf{Proyección PSD}: si $\widehat{\Sigma}_t$ pierde semidefinitud, truncar autovalores negativos a cero.
+\end{itemize}
+
+\paragraph{Comunicación.}
+Reportar ambos: línea base (\emph{factual}) y versión \emph{ex-COVID} (o ex-outliers) para evaluar cuánto del índice se explica por episodios extremos. 
+Incluir nota metodológica breve en las figuras.
+
+\subsection{Extensiones}
+
+\paragraph{Multipaís.}
+El procedimiento es portable: replicar flujo de datos y estimación por país. 
+Para comparabilidad cruzada, normalizar $V_t$ por su distribución histórica local (percentiles) y mostrar mapas de \emph{heat} por fecha/país.
+
+\paragraph{Más shocks y bloques.}
+\begin{itemize}
+  \item \textbf{Ampliación de $s_t$:} añadir tipos globales a 2Y, VIX, precios de commodities clave (petróleo, mineral de hierro, soja) o condiciones financieras globales (GFCI). 
+  \item \textbf{Bloques temáticos:} construir subíndices (comercial, financiero, riesgo) agregando $V_t$ por subconjuntos de shocks para una lectura por canal.
+\end{itemize}
+
+\paragraph{Múltiples vectores de cointegración.}
+Si $r>1$, definir $\mu_t=\sum_{\ell} \sum_{r'=1}^{r} \alpha_{y,\ell}^{(r')} ECT^{(r')}_{t-\ell}$.
+La lectura económica exige identificar cada relación (p.\,ej., \emph{balance externo} vs.\ \emph{paridad de tasas}). 
+El índice conserva la forma con la misma definición de $\sigma_t$.
+
+\paragraph{Intervalos de confianza.}
+Mediante \emph{bootstrap} de bloque para IRFs y \(\Sigma_t\), construir bandas para $V_t$. 
+Útil para cuantificar la incertidumbre de episodios cercanos a umbrales.
+
+\paragraph{No linealidades y regímenes.}
+Extender a VECM de cambio de régimen (TVECM) o transiciones suaves (LSTR) cuando el ajuste al equilibrio difiere entre periodos de estrés/normalidad. 
+La receta del índice no cambia; se actualizan \(\mu_t\), \(\vect{g}(H)\) y, si procede, \(\Sigma_t\) de forma régimen-específica.
+
+\paragraph{Frecuencia mixta.}
+Con indicadores externos mensuales, se puede: (i) \emph{temporal disaggregation} a trimestral para el VECM, o (ii) estimar un modelo puente/UMIDAS para actualizar $\mu_t$ y \(\Sigma_t\) intratrimestre, manteniendo la lectura del índice en base trimestral.
+
+
+% ===================================================
+\appendix
+% ===================================================
+
+\section{Notación}
+\label{app:notation}
+
+\begin{table}[h!]
+\centering
+\caption{Notación y símbolos principales}
+\begin{tabular}{@{}p{3.3cm}p{11.5cm}@{}}
+\toprule
+Símbolo & Definición \\
+\midrule
+$y_t$ & PIB real (log) en el trimestre $t$. \\[2pt]
+$z_t \in \R^{m}$ & Vector de variables \emph{I(1)} (incluye $y_t$ y externos con raíz unitaria). \\[2pt]
+$x_t \in \R^{q}$ & Vector de variables \emph{I(0)} (p.ej., spread, IP\_G7, dummies). \\[2pt]
+$\Delta$ & Operador diferencia: $\Delta x_t = x_t - x_{t-1}$. \\[2pt]
+$ECT_t$ & Término de corrección del error: $ECT_t = \beta^\top z_t + d_t$. \\[2pt]
+$\alpha \in \R^{m\times r}$ & Matriz de velocidades de ajuste del VECM. \\[2pt]
+$\beta \in \R^{m\times r}$ & Matriz de vectores de cointegración. \\[2pt]
+$p$ & Orden del VAR/VECM. \\[2pt]
+$r$ & Rango de cointegración (número de relaciones de equilibrio). \\[2pt]
+$\Gamma_i$ & Coeficientes de corto plazo sobre $\Delta z_{t-i}$ en el VECM. \\[2pt]
+$\Theta$ & Coeficientes de $x_t$ (variables \emph{I(0)}) en el VECM. \\[2pt]
+$u_t,\ \Sigma_u$ & Innovaciones del VAR en niveles y su matriz de varianzas--covarianzas. \\[2pt]
+$\Psi_h$ & Coeficientes MA de la representación $z_t = \mu + \sum_{h\ge0}\Psi_h u_{t-h}$. \\[2pt]
+$\text{IRF}_{y\leftarrow j}(h)$ & Respuesta del PIB en horizonte $h$ a un \emph{shock} en $j$. \\[2pt]
+$g_j(H)$ & Carga acumulada del PIB al \emph{shock} $j$: $g_j(H)=\sum_{h=1}^H \text{IRF}_{y\leftarrow j}(h)$. \\[2pt]
+$\vect{g}(H)$ & Vector de sensibilidades acumuladas $\big(g_1(H),\dots,g_k(H)\big)^\top$. \\[2pt]
+$s_t \in \R^{k}$ & Vector de \emph{shocks} empíricos: $(\Delta \text{ToT}_t, \Delta \text{US10Y}_t, \text{Spread}_t, \ldots)^\top$. \\[2pt]
+$\Sigma_t$ & Matriz de covarianzas \emph{rolling} de $s_t$ en ventana $W$. \\[2pt]
+$\mu_t$ & Contribución determinística del equilibrio: $\mu_t=\sum_{\ell=1}^{L^\star}\alpha_{y,\ell} ECT_{t-\ell}$. \\[2pt]
+$\sigma_t$ & Riesgo externo vigente del PIB: $\sigma_t=\sqrt{\vect{g}(H)^\top \Sigma_t \vect{g}(H)}$. \\[2pt]
+$ESD_t$ & Señal en sigmas: $ESD_t = -\mu_t/\sigma_t$. \\[2pt]
+$f(\sigma_t)$ & Amplificador de riesgo: $f(\sigma_t)=(\sigma_t/\sigma_{\text{ref}})^\lambda$. \\[2pt]
+$V_t$ & Índice final: $V_t = ESD_t \cdot f(\sigma_t)$. \\[2pt]
+$W$ & Longitud de la ventana para $\Sigma_t$. \\[2pt]
+$H$ & Horizonte de análisis para $g(H)$ y $\sigma_t$. \\[2pt]
+$\lambda$ & Exponente del amplificador de riesgo. \\[2pt]
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===================================================
+
+\section{Detalles econométricos adicionales}
+\label{app:eco_details}
+
+\subsection*{A. Pruebas de diagnóstico del VECM}
+\begin{itemize}
+  \item \textbf{Autocorrelación residual.} Test de Portmanteau (Ljung--Box) sobre residuos y, si procede, sobre residuos al cuadrado (ARCH LM).
+  \item \textbf{Normalidad.} Jarque--Bera o Doornik--Hansen en cada ecuación y conjunto multivariante.
+  \item \textbf{Heterocedasticidad.} White/Breusch--Pagan a nivel de ecuación.
+  \item \textbf{Estabilidad.} Raíces del VAR en niveles equivalente; todas dentro del círculo unitario. Con $r>0$, verificar estabilidad de la forma reducida con $\Pi=\alpha\beta^\top$.
+  \item \textbf{Exogeneidad débil.} Contrastes sobre filas de $\alpha$ (cero) para variables potencialmente exógenas.
+\end{itemize}
+
+\subsection*{B. Selección de rezagos y determinísticos}
+\begin{itemize}
+  \item \textbf{Criterios de información.} AIC, SBIC, HQ para $p\in\{1,\dots,p_{\max}\}$.
+  \item \textbf{Determinísticos.} Constante/tendencia restringidas o no en $ECT_t$ según la taxonomía estándar de Johansen; elegir por evidencia empírica y estabilidad.
+  \item \textbf{Dummies.} Incluir $D^{\text{crash}}_t$ y $D^{\text{rec}}_t$ como exógenas en $x_t$ para absorber no linealidades (COVID).
+\end{itemize}
+
+\subsection*{C. IRFs y escalas}
+\begin{itemize}
+  \item \textbf{Identificación.} IRFs ortogonalizadas (Cholesky) o generalizadas (GIRFs). Las GIRFs eliminan la dependencia del orden y se recomiendan con fuerte correlación cruzada.
+  \item \textbf{Tamaño de shock.} Fijar en unidades económicas: ToT/IP\_G7 (log) $+1\%$; tasas/spreads $+100$ bps. Reescalar GIRFs si están estandarizadas.
+  \item \textbf{Semivida (half-life).} Para evaluar persistencia del ajuste del ECT: $h_{1/2} = -\log(2)/\log(1+\alpha_y)$ si se usa ECM parsimonioso.
+\end{itemize}
+
+\subsection*{D. Estimación de \texorpdfstring{$\Sigma_t$}{Sigma\_t} y estabilidad numérica}
+\begin{itemize}
+  \item \textbf{Rolling muestral.} $\Sigma_t=\widehat{\Cov}(s_{t-W+1},\ldots,s_t)$ con $W\in[32,60]$ (trimestral).
+  \item \textbf{EWMA/robusta.} Alternativas: EWMA con decaimiento $\lambda_{\text{EWMA}}\in[0.92,0.98]$; shrinkage de Ledoit--Wolf hacia diagonal; covarianza robusta (MCD).
+  \item \textbf{Proyección PSD.} Si $\Sigma_t$ pierde semidefinitud por redondeo, proyectar: $\Sigma_t = Q \max(\Lambda,0) Q^\top$ con descomposición espectral $\Sigma_t=Q\Lambda Q^\top$.
+  \item \textbf{Floor numérico.} Usar $\sigma_t \leftarrow \sqrt{\max(\vect{g}^\top \Sigma_t \vect{g},\,\varepsilon)}$, $\varepsilon$ pequeño, para evitar divisiones inestables.
+\end{itemize}
+
+\subsection*{E. Intervalos de confianza de IRFs (opcional)}
+\begin{itemize}
+  \item \textbf{Bootstrap de bloque.} Re-muestreo por bloques para respetar dependencia temporal; bandas percentiles o Hall.
+  \item \textbf{Delta method.} Aproximación asintótica vía varianza de parámetros del VAR y propagación a IRFs; útil para bandas rápidas.
+\end{itemize}
+
+% ===================================================
+
+\section{Tablas y figuras complementarias}
+\label{app:extras}
+
+\subsection*{A. Resultados ampliados del VECM}
+\begin{itemize}
+  \item \textbf{Tabla A1.} Estimación de $\alpha$, $\beta$ (normalización sobre $y_t$), $\Gamma_i$, determinísticos y dummies; errores estándar robustos.
+  \item \textbf{Tabla A2.} Pruebas de Johansen (traza y máximo eigenvalor) bajo distintas especificaciones de determinísticos.
+  \item \textbf{Tabla A3.} Diagnóstico de residuos (autocorrelación, normalidad, heterocedasticidad).
+\end{itemize}
+
+\subsection*{B. IRFs y cargas acumuladas}
+\begin{itemize}
+  \item \textbf{Figura A1.} IRFs del PIB por shock (ToT, US10Y, spread, IP\_G7), con bandas (si se estiman).
+  \item \textbf{Tabla A4.} $g_j(H)$ para $H\in\{4,8\}$ y tamaños de shock estándar.
+\end{itemize}
+
+\subsection*{C. Riesgo y contribuciones}
+\begin{itemize}
+  \item \textbf{Figura A2.} $\sigma_t$ con ventanas $W\in\{32,48,60\}$ (comparación).
+  \item \textbf{Figura A3.} Descomposición ``tipo Shapley'' de $\sigma_t^2$ por shocks (áreas apiladas de \emph{shares}).
+\end{itemize}
+
+\subsection*{D. Índice y episodios}
+\begin{itemize}
+  \item \textbf{Figura A4.} Índice $V_t$ con umbrales (P50, P75, P90) y sombreado de episodios Naranja/Rojo.
+  \item \textbf{Tabla A5.} Clasificación de episodios por percentiles y fechas clave (picos, duración).
+  \item \textbf{Figura A5.} Scatter $V_t$ vs. $\Delta y_{t+1}$ \emph{ex-COVID}.
+\end{itemize}
+
+
+\end{document}
