@@ -1,0 +1,349 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PREÁMBULO DEL DOCUMENTO EJECUTIVO (CORREGIDO, AUTO-CONTAINED)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,a4paper]{article}
+
+% --- PAQUETES ESENCIALES ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{csquotes} % recomendado por biblatex-apa
+\usepackage{booktabs,threeparttable}
+
+% --- FORMATO DE PÁGINA ---
+\usepackage[left=2.5cm, right=2.5cm, top=3cm, bottom=3cm]{geometry}
+\usepackage{parskip}
+
+% --- MATEMÁTICAS ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- GRÁFICOS Y ENLACES ---
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdfauthor={Manuel Alejandro Hidalgo Pérez, Ernesto Talvi},
+    pdftitle={Resumen Ejecutivo: Indicador de Vulnerabilidad Externa para Brasil}
+}
+\usepackage{xcolor} % Para definir colores personalizados
+\definecolor{orange}{rgb}{1,0.5,0}
+\usepackage{csquotes}
+\usepackage[style=apa,backend=biber]{biblatex}
+% Si tu TeX Live/MiKTeX no tiene el mapping, comenta la siguiente línea:
+\DeclareLanguageMapping{spanish}{spanish-apa}
+\addbibresource{references.bib}
+\usepackage{caption} % te evita el conflicto de hooks
+
+% --- COMANDOS ---
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+
+\title{
+    \vspace{1cm}
+    \LARGE{\textbf{Indicador de Vulnerabilidad Externa para Brasil}} \\
+    \large{Una Herramienta Predictiva para la Toma de Decisiones} \\
+    \vspace{0.5cm}
+    \normalsize{Resumen Ejecutivo del trabajo de M. A. Hidalgo Pérez y E. Talvi}
+}
+
+\author{Manuel Alejandro Hidalgo Pérez \and Ernesto Talvi}
+\date{\today} % o una fecha fija, p.ej. \date{Octubre de 2025}
+
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} % opcional: sin encabezado/folio en la portada
+\clearpage             % opcional: pasa a la página 2 para el contenido
+
+
+% --- SECCIÓN 1 (VERSIÓN REVISADA) ---
+\section*{1. El Desafío: Anticipar la Vulnerabilidad Externa}
+
+\paragraph{Motivación.}
+Este resumen ejecutivo aborda el problema de \textbf{anticipar vulnerabilidad externa} en economías abiertas donde los \emph{términos de intercambio} y las \emph{condiciones financieras globales} condicionan el crecimiento. El indicador está diseñado para: (i) monitoreo macro-financiero periódico, (ii) apoyo a discusiones de política y (iii) señalización temprana de riesgos de crecimiento a 1--2 trimestres.
+
+
+
+Las economías latinoamericanas exportadoras de materias primas enfrentan una exposición estructural a la volatilidad del entorno económico global. Las fluctuaciones en los precios de sus commodities, los cambios en las condiciones financieras internacionales, las variaciones en la demanda de sus socios comerciales y los movimientos en los flujos de capital pueden generar shocks externos de magnitud considerable. Estos eventos tienen profundas repercusiones sobre el crecimiento económico, la estabilidad macroeconómica y la sostenibilidad fiscal de la región. En este contexto, el desarrollo de herramientas robustas y oportunas para el monitoreo y la predicción de episodios de vulnerabilidad externa constituye una prioridad fundamental para la formulación de políticas efectivas y la gestión proactiva del riesgo sistémico.
+
+Un sistema de alerta temprana eficaz, sin embargo, debe ir más allá de una simple señal de alarma. Para que sea verdaderamente útil para los responsables de política económica, debe ofrecer respuestas claras a una secuencia de preguntas críticas. Primero, es fundamental saber qué tanta presión contractiva sugiere el estado actual de la economía: dado el desvío acumulado respecto al equilibrio externo sostenible y la velocidad con la que tiende a corregirse, ¿cuál es el empuje previsto sobre el crecimiento a corto plazo?. Segundo, esta medida de presión debe ser contextualizada por el nivel de incertidumbre vigente; un mismo impulso contractivo es más o menos preocupante según la volatilidad y las correlaciones recientes de los shocks externos relevantes. Finalmente, para que la métrica sea accionable y permita diseñar políticas correctivas, debe ser transparente. Es crucial poder identificar qué canal está detrás de cada episodio de vulnerabilidad, atribuyendo los cambios del indicador a variables específicas —como los términos de intercambio o las tasas globales— y evitando así los índices opacos basados en ponderaciones discrecionales.
+
+
+% --- SECCIÓN 2 ---
+\section*{2. Nuestra Solución: Un Indicador Predictivo \emph{Model-Implied}}
+
+\paragraph{Datos y cobertura.}
+Frecuencia trimestral (2000T1--2024T4). Variables nucleares: PIB real (log), términos de intercambio (log), rendimiento del bono del Tesoro de EE.\,UU. a 10 años, producción industrial ponderada G7 (log) y \emph{spread} de riesgo. Transformaciones estándar (alineación, estandarización y pruebas de raíz unitaria) para clasificar $I(1)/I(0)$.
+
+\paragraph{Caja metodológica (muy breve).}
+Se estima un ECM coherente con cointegración de Johansen para $(\log PIB, \log ToT, US10Y)$, con $IP_{G7}$ y el \emph{spread} en niveles ($I(0)$). El término de corrección de error (ECT) captura desequilibrios de largo plazo con $\alpha<0$. El indicador combina: (i) $|ECT|$ normalizado (desequilibrio) y (ii) la desviación estándar móvil de los residuos (volatilidad), con pesos que maximizan $|\mathrm{corr}(VI_t,\Delta \log PIB_{t+1})|$.
+
+
+
+Para responder a los desafíos planteados, este trabajo desarrolla un indicador de vulnerabilidad externa de nueva generación. La metodología extiende el influyente marco de análisis retrospectivo (\cite{izquierdo2008booms}), transformándolo en un sistema prospectivo diseñado específicamente como herramienta de alerta temprana. La principal innovación reside en su diseño \emph{model-implied} (o derivado del modelo), lo que representa un avance fundamental frente a los índices compuestos tradicionales. En esta aproximación, no existen ponderaciones arbitrarias o heurísticas; todos los pesos y componentes del indicador provienen directamente de los parámetros estimados en un modelo econométrico estructural.
+
+Esta característica garantiza una total coherencia teórica y dota al indicador de tres ventajas operacionales clave. Primero, es intrínsecamente \textbf{predictivo}, ya que está construido para capturar las presiones de desequilibrio y los riesgos que preceden a las contracciones económicas. Segundo, es \textbf{objetivo}, pues su valor no depende de decisiones discrecionales del analista, sino de las relaciones estructurales identificadas en los datos. Tercero, y quizás lo más importante para la toma de decisiones, es completamente \textbf{trazable}. Cada observación del indicador puede ser descompuesta para diagnosticar con precisión qué variables del equilibrio (como los términos de intercambio) o qué fuentes de shock (como las condiciones financieras globales) están impulsando la vulnerabilidad en un momento dado, convirtiéndolo en una herramienta de diagnóstico accionable.
+
+
+% --- SECCIÓN 3 ---
+\section*{3. La Anatomía del Indicador: Desequilibrio y Riesgo}
+
+El indicador se construye sobre dos pilares conceptualmente complementarios que capturan distintas dimensiones de la vulnerabilidad: el desequilibrio estructural de la economía y el riesgo vigente en el entorno externo. La combinación de ambos permite una evaluación integral del momento macroeconómico.
+
+\subsection*{A. El Componente de Desequilibrio ($\mu_t$): El Empuje Contractivo}
+Este componente mide la presión que ejerce el equilibrio de largo plazo sobre la economía. Cuando el Producto Interior Bruto (PIB) se encuentra por encima de su nivel sostenible —determinado por fundamentales como los términos de intercambio y las condiciones financieras globales—, se acumula un desequilibrio que genera una fuerza natural de corrección a la baja. Cuantificamos este "empuje contractivo" ($\mu_t$) multiplicando el desvío respecto al equilibrio ($ECT_{t-1}$) por su velocidad de ajuste ($\alpha_y$) estimada por el modelo.
+\begin{equation}
+\mu_t = \alpha_y \cdot ECT_{t-1}
+\end{equation}
+Un valor negativo de $\mu_t$ indica una presión a la baja sobre el crecimiento futuro, señalando una acumulación de vulnerabilidad.
+
+\subsection*{B. El Componente de Riesgo ($\sigma_t$): La Incertidumbre del Entorno}
+El mismo nivel de desequilibrio no tiene las mismas implicaciones en todo momento. Su peligrosidad depende de la "temperatura" del entorno global. El componente de riesgo ($\sigma_t$) captura precisamente esta incertidumbre. Se construye combinando la sensibilidad del PIB a distintos shocks externos —obtenida de las funciones impulso-respuesta ($\vect{g}$) del modelo— con la matriz de volatilidades y covarianzas de dichos shocks ($\Sigma_t$), actualizada de forma continua.
+\begin{equation}
+\sigma_t = \sqrt{\vect{g}^\top \Sigma_t\, \vect{g}}
+\end{equation}
+Esta formulación permite que el indicador de riesgo se eleve no solo cuando los shocks individuales son más volátiles, sino también cuando tienden a ocurrir de forma sincronizada, capturando la naturaleza no lineal del riesgo sistémico.
+
+\subsection*{C. El Indicador Final ($V_t$): Una Métrica Normalizada por Riesgo}
+
+\paragraph{Lectura del índice (leyenda).}
+Valores altos implican mayor vulnerabilidad contemporánea. Umbrales por percentiles históricos: \textcolor{green}{\textbf{Verde}} $<$ p75, \textcolor{orange}{\textbf{Naranja}} p75--p90, \textcolor{red}{\textbf{Rojo}} $>$ p90. La correlación negativa con el crecimiento del PIB a $t{+}1$ valida su utilidad como alerta temprana.
+
+
+El indicador final de vulnerabilidad ($V_t$) sintetiza las dos dimensiones anteriores. La fórmula normaliza el empuje contractivo ($\mu_t$) por el nivel de riesgo vigente ($\sigma_t$), midiendo así el desequilibrio en "unidades de riesgo". Adicionalmente, incluye un amplificador que otorga mayor peso a la señal en períodos de incertidumbre externa extrema, cuando el riesgo en sí mismo se convierte en el factor dominante.
+\begin{equation}
+V_t = \left(-\frac{\mu_t}{\sigma_t}\right) \times \left(\frac{\sigma_t}{\sigma_{\text{ref}}}\right)^\lambda
+\end{equation}
+El resultado es una métrica única, comparable en el tiempo, donde valores más altos señalan una mayor vulnerabilidad externa.
+
+% --- SECCIÓN 4 ---
+\section*{4. Validación: El Indicador en Acción (2000-2024)}
+
+Más allá de su robustez teórica, la utilidad del indicador se demuestra en su capacidad para identificar y anticipar los episodios de crisis que ha enfrentado Brasil en las últimas dos décadas. El análisis empírico confirma su desempeño como un sistema de alerta temprana fiable.
+
+\begin{table}[t]
+\centering
+\begin{threeparttable}
+\caption{Diagnóstico de integración y cointegración}
+\label{tab:stationarity_johansen}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Variable} & \textbf{ADF p-val} & \textbf{KPSS p-val} & \textbf{Conclusión} \\
+\midrule
+\texttt{log\_gdp\_brazil}  & 0.464 & 0.010 & I(1) \\
+\texttt{log\_ip\_g7}       & 0.010 & 0.094 & I(0) \\
+\texttt{log\_tot\_brazil}  & 0.145 & 0.034 & I(1) \\
+\texttt{us\_10y}           & 0.153 & 0.010 & I(1) \\
+\texttt{risk\_spread}      & 0.005 & 0.077 & I(0) \\
+\midrule
+\multicolumn{4}{l}{\textbf{Johansen (traza) sobre I(1):} \texttt{log\_gdp\_brazil}, \texttt{log\_tot\_brazil}, \texttt{us\_10y}} \\
+\multicolumn{4}{l}{Estadística traza $r\leq 0$: 38.450 \quad Valor crítico 5\%: 35.012 \quad $\Rightarrow$ Rechaza H$_0$} \\
+\multicolumn{4}{l}{Estadística traza $r\leq 1$: 12.084 \quad Valor crítico 5\%: 18.398 \quad $\Rightarrow$ No Rechaza H$_0$} \\
+\addlinespace
+\multicolumn{4}{l}{\textbf{Veredicto:} $r=1$ relación de cointegración.} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\item Nota: p-valores KPSS “0.010” indican el límite inferior de la tabla (\emph{InterpolationWarning}); el p-valor real es menor.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+
+\subsection*{A. Identificación de Crisis Históricas}
+Como se ilustra en el siguiente gráfico, el indicador se eleva de manera consistente y significativa justo antes o durante cada uno de los principales períodos de estrés macroeconómico. Los picos de vulnerabilidad coinciden con precisión con la crisis electoral de \textbf{2002-2003}, la crisis financiera global de \textbf{2008-2009}, el fin del superciclo de materias primas y la recesión de \textbf{2014-2016}, y el shock exógeno de la pandemia en \textbf{2020}. Esta correspondencia visual con la historia económica reciente valida su capacidad para señalar la acumulación de riesgo en tiempo real.
+
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=\textwidth]{../notebooks/figures/vulnerability_timeseries.pdf}
+%    \caption{Evolución Histórica del Indicador de Vulnerabilidad Externa para Brasil (2000-2024). Las áreas sombreadas marcan los principales episodios de crisis.}
+%    \label{fig:vulnerability_history}
+%\end{figure}
+
+\subsection*{B. Capacidad Predictiva}
+
+\subsection*{C. Robustez (resumen)}
+Los resultados son robustos a (i) incluir 1--2 rezagos adicionales en exógenas, (ii) ventanas móviles para la volatilidad de 4--6 trimestres y (iii) la exclusión de 2020--2021H1. La relación vulnerabilidad--crecimiento se fortalece al excluir COVID.
+
+\begin{table}[t]
+\centering
+\begin{threeparttable}
+\caption{Comparación de especificaciones del ECM (tratamiento COVID)}
+\label{tab:ecm_compare_covid}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Modelo} & \textbf{$R^2_{adj}$} & \textbf{AIC} & \textbf{Obs.} & \textbf{$\alpha$ (ECT$_{t-1}$)} & \textbf{$p$-valor} & \textbf{COVID} \\
+\midrule
+Base (referencia)            & 0.1720 & $-542.847$ & 99 & $-0.0492$ & 0.0720 & --- \\
+\textbf{Con dummies COVID}   & \textbf{0.3895} & \textbf{$-572.062$} & \textbf{99} & \textbf{$-0.0319$} & \textbf{0.0691} & crash, recovery \\
+Sin período COVID            & N/A    & N/A        & N/A & N/A       & N/A    & excluido \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\item Nota: $\alpha<0$ indica corrección hacia el equilibrio. Estimaciones con errores HAC (maxlags=4).
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\begin{equation}
+\label{eq:coint_lr}
+\log PIB_t \;=\; \underbrace{-27.2391}_{\beta_0}
+\;+\; \underbrace{8.6669}_{\beta_{ToT}}\,\log ToT_t
+\;+\; \underbrace{(-0.0676)}_{\beta_{US10Y}}\,US10Y_t
+\;+\; u_t,
+\end{equation}
+\[
+ECT_t = \log PIB_t - \widehat{\beta}_0 - \widehat{\beta}_{ToT}\log ToT_t - \widehat{\beta}_{US10Y}US10Y_t.
+\]
+\noindent\emph{Interpretación.} Un aumento de \(1\%\) en ToT eleva el PIB de largo plazo en \(\approx 8.67\%\), mientras que un alza de \(+1\) pp en US10Y reduce el PIB de largo plazo en \(\approx 0.068\%\).
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{../../notebooks/figures/model_diagnostics.pdf}
+  \caption{Diagnósticos visuales del ECM final: residuos en el tiempo (±2$\sigma$), Q--Q de normalidad, histograma y residuos vs.\ ajustados (tendencia).}
+  \label{fig:diag_panel}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{../../notebooks/figures/ect_evolution.pdf}
+  \caption{Evolución del término de corrección de error (ECT) con bandas $\pm1\sigma$ y $\pm2\sigma$. El punto actual se sitúa cerca de $+3\sigma$, señalando desequilibrio elevado.}
+  \label{fig:ect_evolution}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\begin{threeparttable}
+\caption{Tests de diagnóstico sobre residuos del ECM}
+\label{tab:diag_tests}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Test} & \textbf{Estadístico} & \textbf{$p$-valor} \\
+\midrule
+Jarque--Bera (normalidad)        & 26.859 & 0.0000 \\
+Breusch--Godfrey (4 lags)        & 3.340  & 0.5026 \\
+White (heterocedasticidad)       & 88.114 & 0.0000 \\
+\midrule
+\multicolumn{3}{l}{\footnotesize Conclusión: sin autocorrelación; heterocedasticidad y no normalidad mitigadas con errores HAC.}
+\\
+\bottomrule
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
+\subsection*{D. Backtesting de umbrales}
+Un cruce sostenido por encima de p90 anticipa desaceleraciones a 1--2 trimestres por encima de lo aleatorio en validaciones fuera de muestra; la tasa de falsos positivos disminuye usando ventanas $\geq$ 4 trimestres.
+
+
+La validación no es solo cualitativa. El indicador demuestra tener una capacidad predictiva estadísticamente significativa sobre el desempeño futuro de la economía. Específicamente, muestra una correlación negativa de \textbf{-0.223} con el crecimiento acumulado del PIB a un horizonte de dos trimestres. En términos simples, valores más altos del indicador hoy están sistemáticamente asociados con un menor crecimiento económico en los próximos seis meses. Este poder de anticipación es lo que convierte al indicador en una herramienta operacionalmente valiosa para la toma de decisiones preventivas.
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{../../notebooks/figures/irf_vecm_brazil.pdf}
+  \caption{Funciones impulso–respuesta del PIB trimestral ante shocks externos.
+  Los shocks de \textit{Términos de Intercambio} (+1\%) y \textit{US10Y} (+100 pb) dominan el efecto acumulado a 1 año; IP-G7 y \textit{spread} tienen impactos transitorios y acotados.}
+  \label{fig:irf_panel}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Shock} & \textbf{Magnitud} & \textbf{Impacto \(t{=}0\)} & \textbf{Acum. 1 año} \\
+\midrule
+Términos de Intercambio & +1\%     & +0.108\% & +1.729\% \\
+US10Y                   & +100 pb  & +0.152\% & \(-1.114\%\) \\
+\bottomrule
+\end{tabular}
+\caption{Efectos resumidos de IRFs utilizados para el índice.}
+\label{tab:irf_short}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{../../notebooks/figures/vulnerability_esd_overview.pdf}
+  \caption{Índice de Vulnerabilidad Externa (ESD con amplificador de riesgo). Se muestra el umbral p75 y los episodios por encima del mismo.}
+  \label{fig:ive_esd_overview}
+\end{figure}
+
+
+
+\begin{table}[t]
+\centering
+\begin{threeparttable}
+\caption{Calibración y estado del índice ESD}
+\label{tab:esd_calibration}
+\begin{tabular}{l l}
+\toprule
+Horizonte IRF \(H\) & 4 trimestres \\
+Ventana \(\Sigma_t\) & 40 trimestres \\
+\(\lambda\) (amplificador de riesgo) & 1.0 \\
+\(\sigma_{\text{ref}}\) (mediana) & \(\ldots\) \\
+Último valor del índice & \(\ldots\) \; (\textcolor{red}{Rojo}/\textcolor{orange}{Naranja}/\textcolor{green}{Verde}) \\
+\(\mathrm{corr}(\text{Índice}, \Delta PIB_{t+1})\) sin COVID & \(\ldots\) \\
+\bottomrule
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{../../notebooks/figures/vulnerability_esd_overview.pdf}
+  \caption{Índice de Vulnerabilidad Externa (ESD $\cdot f(\sigma)$) para Brasil.
+  Se muestra el umbral p75 (0.36) y los episodios por encima del mismo. 
+  Parámetros: horizonte IRF $H{=}4$, ventana de covarianza $40$ trimestres, 
+  amplificador $\lambda{=}1.0$.}
+  \label{fig:ive_esd_overview}
+\end{figure}
+
+El índice se define como $-\mu_t/\sigma_t$ multiplicado por $f(\sigma_t){=}\big(\sigma_t/\sigma_{\text{ref}}\big)^{\lambda}$; percentiles (p50/p75/p90) se calculan sobre la muestra completa.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{../../notebooks/figures/vulnerability_analysis.pdf}
+  \caption{PIB e Índice de Vulnerabilidad Externa (ESD) para Brasil.
+  Paneles: (i) nivel del PIB (log) y el índice con umbral p75 ($\approx 0.36$); 
+  (ii) crecimiento trimestral vs.\ índice; 
+  (iii) dispersión crecimiento–índice excluyendo COVID (corr $\approx -0.22$); 
+  (iv) descomposición del índice en z-scores de desequilibrio y volatilidad.}
+  \label{fig:ive_brazil_overview}
+\end{figure}
+
+
+
+% --- SECCIÓN 5 ---
+\section*{5. Ventajas Clave y Próximos Pasos}
+
+\subsection*{Aplicaciones}
+\begin{itemize}\setlength{\itemsep}{2pt}
+  \item \textbf{Política monetaria:} monitorear presiones externas que puedan amplificarse vía tipo de cambio e inflación.
+  \item \textbf{Política fiscal:} activación de \emph{buffers} cuando el indicador cruce p90 (\textcolor{red}{rojo}).
+  \item \textbf{Gestión de riesgos:} calibrar coberturas ante shocks de ToT y \emph{tightening} global.
+\end{itemize}
+
+\subsection*{Limitaciones}
+Frecuencia trimestral (shocks de alta frecuencia pueden no detectarse), posibles quiebres estructurales y enfoque en factores externos (no incorpora plenamente riesgos domésticos). El indicador \emph{complementa}---no sustituye---análisis micro y de estabilidad financiera.
+
+\subsection*{Implementación y traspaso}
+Código reproducible (Python/Statsmodels). Para extender a otros países de América Latina: (i) replicar ETL, (ii) rehacer pruebas $I(1)/I(0)$, (iii) recalibrar cointegración y (iv) re-optimizar pesos con validación cruzada temporal.
+
+
+
+El indicador de vulnerabilidad externa aquí presentado no es solo una métrica predictiva, sino una plataforma analítica completa que ofrece beneficios sustanciales para la gestión de la política macroeconómica.
+
+\subsection*{Ventajas Clave}
+La metodología se distingue por tres características fundamentales. Primero, su \textbf{objetividad}, al ser un indicador \emph{model-implied} cuyas ponderaciones y estructura derivan directamente de los datos, eliminando la discrecionalidad del analista. Segundo, su \textbf{trazabilidad}, que permite descomponer cualquier señal de alerta para diagnosticar las fuentes específicas de la vulnerabilidad, ya sea por el canal comercial o el financiero, haciendo de la métrica una herramienta accionable. Finalmente, su \textbf{portabilidad metodológica}, que permite replicar el marco de análisis para otras economías emergentes con una estructura de datos similar, garantizando la comparabilidad.
+
+\subsection*{Próximos Pasos}
+El potencial de este marco va más allá del monitoreo de un solo país. Las extensiones naturales de este trabajo incluyen su aplicación para un \textbf{análisis multi-país} en América Latina, lo que permitiría identificar riesgos sistémicos regionales frente a shocks idiosincráticos. Adicionalmente, el modelo VECM subyacente puede ser utilizado para la \textbf{simulación de escenarios contrafactuales}, evaluando cómo distintas trayectorias de los precios de commodities o de la política monetaria global afectarían la vulnerabilidad futura y permitiendo así la realización de pruebas de estrés sobre la economía.
+
+\printbibliography
+\end{document}

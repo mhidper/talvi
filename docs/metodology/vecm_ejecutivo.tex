@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PREÁMBULO DEL DOCUMENTO EJECUTIVO (CORREGIDO, AUTO-CONTAINED)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,a4paper]{article}
+
+% --- PAQUETES ESENCIALES ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{csquotes} % recomendado por biblatex-apa
+
+% --- FORMATO DE PÁGINA ---
+\usepackage[left=2.5cm, right=2.5cm, top=3cm, bottom=3cm]{geometry}
+\usepackage{parskip}
+
+% --- MATEMÁTICAS ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- GRÁFICOS Y ENLACES ---
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdfauthor={Manuel Alejandro Hidalgo Pérez, Ernesto Talvi},
+    pdftitle={Resumen Ejecutivo: Indicador de Vulnerabilidad Externa para Brasil}
+}
+\usepackage{csquotes}
+\usepackage[style=apa,backend=biber]{biblatex}
+% Si tu TeX Live/MiKTeX no tiene el mapping, comenta la siguiente línea:
+\DeclareLanguageMapping{spanish}{spanish-apa}
+\addbibresource{references.bib}
+\usepackage{caption} % te evita el conflicto de hooks
+
+% --- COMANDOS ---
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+
+\title{
+    \vspace{1cm}
+    \LARGE{\textbf{Indicador de Vulnerabilidad Externa para Brasil}} \\
+    \large{Una Herramienta Predictiva para la Toma de Decisiones} \\
+    \vspace{0.5cm}
+    \normalsize{Resumen Ejecutivo del trabajo de M. A. Hidalgo Pérez y E. Talvi}
+}
+
+
+\begin{document}
+
+
+
+
+% --- SECCIÓN 1 (VERSIÓN REVISADA) ---
+\section*{1. El Desafío: Anticipar la Vulnerabilidad Externa}
+
+Las economías latinoamericanas exportadoras de materias primas enfrentan una exposición estructural a la volatilidad del entorno económico global. Las fluctuaciones en los precios de sus commodities, los cambios en las condiciones financieras internacionales, las variaciones en la demanda de sus socios comerciales y los movimientos en los flujos de capital pueden generar shocks externos de magnitud considerable. Estos eventos tienen profundas repercusiones sobre el crecimiento económico, la estabilidad macroeconómica y la sostenibilidad fiscal de la región. En este contexto, el desarrollo de herramientas robustas y oportunas para el monitoreo y la predicción de episodios de vulnerabilidad externa constituye una prioridad fundamental para la formulación de políticas efectivas y la gestión proactiva del riesgo sistémico.
+
+Un sistema de alerta temprana eficaz, sin embargo, debe ir más allá de una simple señal de alarma. Para que sea verdaderamente útil para los responsables de política económica, debe ofrecer respuestas claras a una secuencia de preguntas críticas. Primero, es fundamental saber qué tanta presión contractiva sugiere el estado actual de la economía: dado el desvío acumulado respecto al equilibrio externo sostenible y la velocidad con la que tiende a corregirse, ¿cuál es el empuje previsto sobre el crecimiento a corto plazo?. Segundo, esta medida de presión debe ser contextualizada por el nivel de incertidumbre vigente; un mismo impulso contractivo es más o menos preocupante según la volatilidad y las correlaciones recientes de los shocks externos relevantes. Finalmente, para que la métrica sea accionable y permita diseñar políticas correctivas, debe ser transparente. Es crucial poder identificar qué canal está detrás de cada episodio de vulnerabilidad, atribuyendo los cambios del indicador a variables específicas —como los términos de intercambio o las tasas globales— y evitando así los índices opacos basados en ponderaciones discrecionales.
+
+
+% --- SECCIÓN 2 ---
+\section*{2. Nuestra Solución: Un Indicador Predictivo \emph{Model-Implied}}
+
+Para responder a los desafíos planteados, este trabajo desarrolla un indicador de vulnerabilidad externa de nueva generación. La metodología extiende el influyente marco de análisis retrospectivo (\cite{izquierdo2008booms}), transformándolo en un sistema prospectivo diseñado específicamente como herramienta de alerta temprana. La principal innovación reside en su diseño \emph{model-implied} (o derivado del modelo), lo que representa un avance fundamental frente a los índices compuestos tradicionales. En esta aproximación, no existen ponderaciones arbitrarias o heurísticas; todos los pesos y componentes del indicador provienen directamente de los parámetros estimados en un modelo econométrico estructural.
+
+Esta característica garantiza una total coherencia teórica y dota al indicador de tres ventajas operacionales clave. Primero, es intrínsecamente \textbf{predictivo}, ya que está construido para capturar las presiones de desequilibrio y los riesgos que preceden a las contracciones económicas. Segundo, es \textbf{objetivo}, pues su valor no depende de decisiones discrecionales del analista, sino de las relaciones estructurales identificadas en los datos. Tercero, y quizás lo más importante para la toma de decisiones, es completamente \textbf{trazable}. Cada observación del indicador puede ser descompuesta para diagnosticar con precisión qué variables del equilibrio (como los términos de intercambio) o qué fuentes de shock (como las condiciones financieras globales) están impulsando la vulnerabilidad en un momento dado, convirtiéndolo en una herramienta de diagnóstico accionable.
+
+
+% --- SECCIÓN 3 ---
+\section*{3. La Anatomía del Indicador: Desequilibrio y Riesgo}
+
+El indicador se construye sobre dos pilares conceptualmente complementarios que capturan distintas dimensiones de la vulnerabilidad: el desequilibrio estructural de la economía y el riesgo vigente en el entorno externo. La combinación de ambos permite una evaluación integral del momento macroeconómico.
+
+\subsection*{A. El Componente de Desequilibrio ($\mu_t$): El Empuje Contractivo}
+Este componente mide la presión que ejerce el equilibrio de largo plazo sobre la economía. Cuando el Producto Interior Bruto (PIB) se encuentra por encima de su nivel sostenible —determinado por fundamentales como los términos de intercambio y las condiciones financieras globales—, se acumula un desequilibrio que genera una fuerza natural de corrección a la baja. Cuantificamos este "empuje contractivo" ($\mu_t$) multiplicando el desvío respecto al equilibrio ($ECT_{t-1}$) por su velocidad de ajuste ($\alpha_y$) estimada por el modelo.
+\begin{equation}
+\mu_t = \alpha_y \cdot ECT_{t-1}
+\end{equation}
+Un valor negativo de $\mu_t$ indica una presión a la baja sobre el crecimiento futuro, señalando una acumulación de vulnerabilidad.
+
+\subsection*{B. El Componente de Riesgo ($\sigma_t$): La Incertidumbre del Entorno}
+El mismo nivel de desequilibrio no tiene las mismas implicaciones en todo momento. Su peligrosidad depende de la "temperatura" del entorno global. El componente de riesgo ($\sigma_t$) captura precisamente esta incertidumbre. Se construye combinando la sensibilidad del PIB a distintos shocks externos —obtenida de las funciones impulso-respuesta ($\vect{g}$) del modelo— con la matriz de volatilidades y covarianzas de dichos shocks ($\Sigma_t$), actualizada de forma continua.
+\begin{equation}
+\sigma_t = \sqrt{\vect{g}^\top \Sigma_t\, \vect{g}}
+\end{equation}
+Esta formulación permite que el indicador de riesgo se eleve no solo cuando los shocks individuales son más volátiles, sino también cuando tienden a ocurrir de forma sincronizada, capturando la naturaleza no lineal del riesgo sistémico.
+
+\subsection*{C. El Indicador Final ($V_t$): Una Métrica Normalizada por Riesgo}
+El indicador final de vulnerabilidad ($V_t$) sintetiza las dos dimensiones anteriores. La fórmula normaliza el empuje contractivo ($\mu_t$) por el nivel de riesgo vigente ($\sigma_t$), midiendo así el desequilibrio en "unidades de riesgo". Adicionalmente, incluye un amplificador que otorga mayor peso a la señal en períodos de incertidumbre externa extrema, cuando el riesgo en sí mismo se convierte en el factor dominante.
+\begin{equation}
+V_t = \left(-\frac{\mu_t}{\sigma_t}\right) \times \left(\frac{\sigma_t}{\sigma_{\text{ref}}}\right)^\lambda
+\end{equation}
+El resultado es una métrica única, comparable en el tiempo, donde valores más altos señalan una mayor vulnerabilidad externa.
+
+% --- SECCIÓN 4 ---
+\section*{4. Validación: El Indicador en Acción (2000-2024)}
+
+Más allá de su robustez teórica, la utilidad del indicador se demuestra en su capacidad para identificar y anticipar los episodios de crisis que ha enfrentado Brasil en las últimas dos décadas. El análisis empírico confirma su desempeño como un sistema de alerta temprana fiable.
+
+\subsection*{A. Identificación de Crisis Históricas}
+Como se ilustra en el siguiente gráfico, el indicador se eleva de manera consistente y significativa justo antes o durante cada uno de los principales períodos de estrés macroeconómico. Los picos de vulnerabilidad coinciden con precisión con la crisis electoral de \textbf{2002-2003}, la crisis financiera global de \textbf{2008-2009}, el fin del superciclo de materias primas y la recesión de \textbf{2014-2016}, y el shock exógeno de la pandemia en \textbf{2020}. Esta correspondencia visual con la historia económica reciente valida su capacidad para señalar la acumulación de riesgo en tiempo real.
+
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=\textwidth]{../notebooks/figures/vulnerability_timeseries.pdf}
+%    \caption{Evolución Histórica del Indicador de Vulnerabilidad Externa para Brasil (2000-2024). Las áreas sombreadas marcan los principales episodios de crisis.}
+%    \label{fig:vulnerability_history}
+%\end{figure}
+
+\subsection*{B. Capacidad Predictiva}
+La validación no es solo cualitativa. El indicador demuestra tener una capacidad predictiva estadísticamente significativa sobre el desempeño futuro de la economía. Específicamente, muestra una correlación negativa de \textbf{-0.223} con el crecimiento acumulado del PIB a un horizonte de dos trimestres. En términos simples, valores más altos del indicador hoy están sistemáticamente asociados con un menor crecimiento económico en los próximos seis meses. Este poder de anticipación es lo que convierte al indicador en una herramienta operacionalmente valiosa para la toma de decisiones preventivas.
+
+% --- SECCIÓN 5 ---
+\section*{5. Ventajas Clave y Próximos Pasos}
+
+El indicador de vulnerabilidad externa aquí presentado no es solo una métrica predictiva, sino una plataforma analítica completa que ofrece beneficios sustanciales para la gestión de la política macroeconómica.
+
+\subsection*{Ventajas Clave}
+La metodología se distingue por tres características fundamentales. Primero, su \textbf{objetividad}, al ser un indicador \emph{model-implied} cuyas ponderaciones y estructura derivan directamente de los datos, eliminando la discrecionalidad del analista. Segundo, su \textbf{trazabilidad}, que permite descomponer cualquier señal de alerta para diagnosticar las fuentes específicas de la vulnerabilidad, ya sea por el canal comercial o el financiero, haciendo de la métrica una herramienta accionable. Finalmente, su \textbf{portabilidad metodológica}, que permite replicar el marco de análisis para otras economías emergentes con una estructura de datos similar, garantizando la comparabilidad.
+
+\subsection*{Próximos Pasos}
+El potencial de este marco va más allá del monitoreo de un solo país. Las extensiones naturales de este trabajo incluyen su aplicación para un \textbf{análisis multi-país} en América Latina, lo que permitiría identificar riesgos sistémicos regionales frente a shocks idiosincráticos. Adicionalmente, el modelo VECM subyacente puede ser utilizado para la \textbf{simulación de escenarios contrafactuales}, evaluando cómo distintas trayectorias de los precios de commodities o de la política monetaria global afectarían la vulnerabilidad futura y permitiendo así la realización de pruebas de estrés sobre la economía.
+
+\printbibliography
+\end{document}
