@@ -1,19 +1,19 @@
 [0] Config.pm:307> INFO - This is Biber 2.19
 [0] Config.pm:310> INFO - Logfile is 'vecm_ejecutivo_reordenado.blg'
-[116] biber-MSWIN64:340> INFO - === 
-[172] Biber.pm:419> INFO - Reading 'vecm_ejecutivo_reordenado.bcf'
-[349] Biber.pm:979> INFO - Found 1 citekeys in bib section 0
-[376] Biber.pm:4419> INFO - Processing section 0
-[397] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
-[521] bibtex.pm:1713> INFO - LaTeX decoding ...
-[767] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[864] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'variable = shifted' with 'variable = non-ignorable'
-[864] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[864] Biber.pm:4239> INFO - Sorting list 'apa/apasortcite//global/global' of type 'entry' with template 'apa' and locale 'es-ES'
-[878] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'variable = shifted' with 'variable = non-ignorable'
-[878] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[878] Biber.pm:4239> INFO - Sorting list 'apa/global//global/global' of type 'entry' with template 'apa' and locale 'es-ES'
-[880] bbl.pm:660> INFO - Writing 'vecm_ejecutivo_reordenado.bbl' with encoding 'UTF-8'
-[883] bbl.pm:763> INFO - Output to vecm_ejecutivo_reordenado.bbl
-[883] Biber.pm:131> WARN - legacy month field 'February' in entry 'izquierdo2008booms' is not an integer - this will probably not sort properly.
-[884] Biber.pm:133> INFO - WARNINGS: 1
+[100] biber-MSWIN64:340> INFO - === 
+[139] Biber.pm:419> INFO - Reading 'vecm_ejecutivo_reordenado.bcf'
+[241] Biber.pm:979> INFO - Found 1 citekeys in bib section 0
+[255] Biber.pm:4419> INFO - Processing section 0
+[265] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
+[344] bibtex.pm:1713> INFO - LaTeX decoding ...
+[414] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[478] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'variable = shifted' with 'variable = non-ignorable'
+[478] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[478] Biber.pm:4239> INFO - Sorting list 'apa/apasortcite//global/global' of type 'entry' with template 'apa' and locale 'es-ES'
+[496] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[496] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'variable = shifted' with 'variable = non-ignorable'
+[497] Biber.pm:4239> INFO - Sorting list 'apa/global//global/global' of type 'entry' with template 'apa' and locale 'es-ES'
+[500] bbl.pm:660> INFO - Writing 'vecm_ejecutivo_reordenado.bbl' with encoding 'UTF-8'
+[503] bbl.pm:763> INFO - Output to vecm_ejecutivo_reordenado.bbl
+[503] Biber.pm:131> WARN - legacy month field 'February' in entry 'izquierdo2008booms' is not an integer - this will probably not sort properly.
+[503] Biber.pm:133> INFO - WARNINGS: 1
