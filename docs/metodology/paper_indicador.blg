@@ -1,27 +1,26 @@
 [0] Config.pm:307> INFO - This is Biber 2.19
 [0] Config.pm:310> INFO - Logfile is 'paper_indicador.blg'
-[87] biber-MSWIN64:340> INFO - === 
-[124] Biber.pm:419> INFO - Reading 'paper_indicador.bcf'
-[230] Biber.pm:979> INFO - Found 36 citekeys in bib section 0
-[245] Biber.pm:4419> INFO - Processing section 0
-[255] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
-[323] bibtex.pm:1713> INFO - LaTeX decoding ...
-[392] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[549] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[549] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[549] Biber.pm:4239> INFO - Sorting list 'apa/apasortcite//global/global' of type 'entry' with template 'apa' and locale 'en-US'
-[550] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
-[593] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[593] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[593] Biber.pm:4239> INFO - Sorting list 'apa/global//global/global' of type 'entry' with template 'apa' and locale 'en-US'
-[593] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
-[614] bbl.pm:660> INFO - Writing 'paper_indicador.bbl' with encoding 'UTF-8'
-[640] bbl.pm:763> INFO - Output to paper_indicador.bbl
-[640] Biber.pm:131> WARN - legacy month field 'February' in entry 'izquierdo2008booms' is not an integer - this will probably not sort properly.
-[640] Biber.pm:131> WARN - legacy month field 'July' in entry 'cavallo2023external' is not an integer - this will probably not sort properly.
-[640] Biber.pm:131> WARN - I didn't find a database entry for 'imf2010earlywarning' (section 0)
-[640] Biber.pm:131> WARN - I didn't find a database entry for 'powell2012world' (section 0)
-[640] Biber.pm:131> WARN - I didn't find a database entry for 'plail2015quest' (section 0)
-[640] Biber.pm:131> WARN - I didn't find a database entry for 'martinez2002predicting' (section 0)
-[640] Biber.pm:131> WARN - I didn't find a database entry for 'juselius2006cointegrated' (section 0)
-[640] Biber.pm:133> INFO - WARNINGS: 7
+[121] biber-MSWIN64:340> INFO - === 
+[178] Biber.pm:419> INFO - Reading 'paper_indicador.bcf'
+[307] Biber.pm:979> INFO - Found 27 citekeys in bib section 0
+[325] Biber.pm:4419> INFO - Processing section 0
+[336] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
+[440] bibtex.pm:1713> INFO - LaTeX decoding ...
+[588] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[765] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[765] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[765] Biber.pm:4239> INFO - Sorting list 'apa/apasortcite//global/global' of type 'entry' with template 'apa' and locale 'en-US'
+[765] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[811] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[811] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[811] Biber.pm:4239> INFO - Sorting list 'apa/global//global/global' of type 'entry' with template 'apa' and locale 'en-US'
+[811] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[832] bbl.pm:660> INFO - Writing 'paper_indicador.bbl' with encoding 'UTF-8'
+[856] bbl.pm:763> INFO - Output to paper_indicador.bbl
+[857] Biber.pm:131> WARN - Duplicate entry key: 'hollo2012ciss' in file 'references.bib', skipping ...
+[857] Biber.pm:131> WARN - Duplicate entry key: 'catao2014external' in file 'references.bib', skipping ...
+[857] Biber.pm:131> WARN - legacy month field 'March' in entry 'hollo2012ciss' is not an integer - this will probably not sort properly.
+[857] Biber.pm:131> WARN - legacy month field 'February' in entry 'izquierdo2008booms' is not an integer - this will probably not sort properly.
+[857] Biber.pm:131> WARN - legacy month field 'July' in entry 'cavallo2023external' is not an integer - this will probably not sort properly.
+[857] Biber.pm:131> WARN - I didn't find a database entry for 'juselius2006cointegrated' (section 0)
+[857] Biber.pm:133> INFO - WARNINGS: 6

@@ -315,7 +315,6 @@
       \strng{authorbibnamehash}{7a5b05e41200fe17fd2650275a7816d9}
       \strng{authornamehash}{b020e2f5c6641a66e44af0eca38a0d3a}
       \strng{authorfullhash}{7a5b05e41200fe17fd2650275a7816d9}
-      \field{extraname}{1}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{extradatescope}{labelyear}
@@ -328,50 +327,6 @@
       \field{title}{Sudden Stops, the Real Exchange Rate, and Fiscal Sustainability: Argentina's Lessons}
       \field{type}{IDB Working Paper}
       \field{year}{2003}
-    \endentry
-    \entry{calvo2006phoenix}{report}{}
-      \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=fc885233ab77bfb12503064c4e0094d0}{%
-           family={Calvo},
-           familyi={C\bibinitperiod},
-           given={Guillermo\bibnamedelima A.},
-           giveni={G\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=b898af9ebe428cfe95f330bdb3f41fa1}{%
-           family={Izquierdo},
-           familyi={I\bibinitperiod},
-           given={Alejandro},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e2a28ff477e5c1c41fde1fd0c7e46e4f}{%
-           family={Talvi},
-           familyi={T\bibinitperiod},
-           given={Ernesto},
-           giveni={E\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{institution}{1}{%
-        {National Bureau of Economic Research}%
-      }
-      \strng{namehash}{b020e2f5c6641a66e44af0eca38a0d3a}
-      \strng{fullhash}{7a5b05e41200fe17fd2650275a7816d9}
-      \strng{bibnamehash}{7a5b05e41200fe17fd2650275a7816d9}
-      \strng{authorbibnamehash}{7a5b05e41200fe17fd2650275a7816d9}
-      \strng{authornamehash}{b020e2f5c6641a66e44af0eca38a0d3a}
-      \strng{authorfullhash}{7a5b05e41200fe17fd2650275a7816d9}
-      \field{extraname}{2}
-      \field{sortinit}{C}
-      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{note}{Also BIS Working Paper 221}
-      \field{number}{12101}
-      \field{title}{Phoenix Miracles in Emerging Markets: Recovering without Credit from Systemic Financial Crises}
-      \field{type}{NBER Working Paper}
-      \field{year}{2006}
     \endentry
     \entry{canova2005transmission}{article}{}
       \name{author}{1}{}{%
@@ -408,8 +363,8 @@
     \endentry
     \entry{catao2014external}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=933a73ce29418c18bde86ef7251d8e52}{%
-           family={Cataõ},
+        {{un=0,uniquepart=base,hash=d16b37d966a2d383aeb5f76ef2ab1402}{%
+           family={Catão},
            familyi={C\bibinitperiod},
            given={Luis\bibnamedelimb A.\bibnamedelimi V.},
            giveni={L\bibinitperiod\bibinitdelim A\bibinitperiod\bibinitdelim V\bibinitperiod},
@@ -421,15 +376,12 @@
            giveni={G\bibinitperiod\bibinitdelim M\bibinitperiod},
            givenun=0}}%
       }
-      \list{publisher}{1}{%
-        {Palgrave Macmillan}%
-      }
-      \strng{namehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{fullhash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{bibnamehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{authorbibnamehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{authornamehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{authorfullhash}{d98bd521fcca8d085639f3145589f7df}
+      \strng{namehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{fullhash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{bibnamehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{authorbibnamehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{authornamehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{authorfullhash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{extradatescope}{labelyear}
@@ -437,22 +389,25 @@
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{IMF Economic Review}
+      \field{journaltitle}{Journal of International Economics}
       \field{number}{1}
-      \field{title}{External Financing and Exchange Rate Flexibility}
-      \field{volume}{62}
+      \field{title}{External Liabilities and Crises}
+      \field{volume}{94}
       \field{year}{2014}
-      \field{pages}{4\bibrangedash 23}
-      \range{pages}{20}
+      \field{pages}{18\bibrangedash 32}
+      \range{pages}{15}
+      \verb{doi}
+      \verb 10.1016/j.jinteco.2014.05.003
+      \endverb
     \endentry
     \entry{cavallo2023external}{report}{}
       \name{author}{3}{}{%
-        {{un=1,uniquepart=given,hash=3ea72a10e4df0fefcfc2a50adc0568e7}{%
+        {{un=0,uniquepart=base,hash=3ea72a10e4df0fefcfc2a50adc0568e7}{%
            family={Cavallo},
            familyi={C\bibinitperiod},
            given={Eduardo},
            giveni={E\bibinitperiod},
-           givenun=1}}%
+           givenun=0}}%
         {{un=0,uniquepart=base,hash=8f947856c015647804277ded7bde32db}{%
            family={Fernández-Arias},
            familyi={F\bibinithyphendelim A\bibinitperiod},
@@ -479,50 +434,13 @@
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{month}{7}
       \field{title}{External Crisis Vulnerability in Latin America and the Caribbean}
       \field{type}{IDB Working Paper}
       \field{year}{2023}
-    \endentry
-    \entry{cavallo2008openness}{article}{}
-      \name{author}{2}{}{%
-        {{un=1,uniquepart=given,hash=3dd0d214b57cc68acaa699d044aad312}{%
-           family={Cavallo},
-           familyi={C\bibinitperiod},
-           given={Eduardo\bibnamedelima A.},
-           giveni={E\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=1}}%
-        {{un=0,uniquepart=base,hash=e0ead265ac131508a578e99e580133e3}{%
-           family={Frankel},
-           familyi={F\bibinitperiod},
-           given={Jeffrey\bibnamedelima A.},
-           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{publisher}{1}{%
-        {Elsevier}%
-      }
-      \strng{namehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{fullhash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{bibnamehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{authorbibnamehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{authornamehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{authorfullhash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \field{sortinit}{C}
-      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Journal of International Money and Finance}
-      \field{number}{8}
-      \field{title}{Does Openness to Trade Make Countries More Vulnerable to Sudden Stops, or Less? Using Gravity to Establish Causality}
-      \field{volume}{27}
-      \field{year}{2008}
-      \field{pages}{1430\bibrangedash 1452}
-      \range{pages}{23}
     \endentry
     \entry{demello2010bank}{article}{}
       \name{author}{2}{}{%
@@ -709,10 +627,37 @@
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
+      \field{month}{3}
       \field{number}{1426}
-      \field{title}{{CISS} - A Composite Indicator of Systemic Stress in the Financial System}
+      \field{title}{{CISS}---A Composite Indicator of Systemic Stress in the Financial System}
       \field{type}{ECB Working Paper}
       \field{year}{2012}
+    \endentry
+    \entry{imf2010ews}{report}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=ebb24d27be637c70ebf0c297ab842b7f}{%
+           family={{International Monetary Fund}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {International Monetary Fund}%
+      }
+      \strng{namehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{fullhash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{bibnamehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{authorbibnamehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{authornamehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{authorfullhash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{IMF-FSB} Early Warning Exercise: Design and Methodological Toolkit}
+      \field{type}{Report}
+      \field{year}{2010}
     \endentry
     \entry{izquierdo2008booms}{report}{}
       \name{author}{3}{}{%
@@ -792,44 +737,6 @@
       \field{number}{20}
       \field{title}{Currency Crises: A Perspective on Recent Theoretical Developments}
       \field{year}{2000}
-    \endentry
-    \entry{jin2016global}{article}{}
-      \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=d176fa8dfd19392a3296af9f900ff3e8}{%
-           family={Jin},
-           familyi={J\bibinitperiod},
-           given={Xiaoye},
-           giveni={X\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=ede689c0e36e752505101b661c5ca9b2}{%
-           family={An},
-           familyi={A\bibinitperiod},
-           given={Xingye},
-           giveni={X\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{publisher}{1}{%
-        {Elsevier}%
-      }
-      \strng{namehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{fullhash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{bibnamehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{authorbibnamehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{authornamehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{authorfullhash}{3361f5a25884cb3354224bbeeb6cce45}
-      \field{sortinit}{J}
-      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Research in International Business and Finance}
-      \field{title}{Global Financial Crisis and Emerging Stock Market Contagion: A Volatility Impulse Response Function Approach}
-      \field{volume}{36}
-      \field{year}{2016}
-      \field{pages}{179\bibrangedash 195}
-      \range{pages}{17}
     \endentry
     \entry{kaminsky1998leading}{article}{}
       \name{author}{3}{}{%
@@ -958,61 +865,14 @@
       \field{pages}{92\bibrangedash 106}
       \range{pages}{15}
     \endentry
-    \entry{lang2019anticipating}{report}{}
-      \name{author}{4}{}{%
-        {{un=1,uniquepart=given,hash=148e008f1d7769824366b05ab4c53baf}{%
-           family={Lang},
-           familyi={L\bibinitperiod},
-           given={Jan\bibnamedelima Hannes},
-           giveni={J\bibinitperiod\bibinitdelim H\bibinitperiod},
-           givenun=1}}%
-        {{un=0,uniquepart=base,hash=282e08e2b7cf57db5499cc171f8dff38}{%
-           family={Izzo},
-           familyi={I\bibinitperiod},
-           given={Cosimo},
-           giveni={C\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e1a04c36709ade38c1412db11ff86644}{%
-           family={Fahr},
-           familyi={F\bibinitperiod},
-           given={Stephan},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=f65e7ddf49c8a9eed76f57714e21f09a}{%
-           family={Ruzicka},
-           familyi={R\bibinitperiod},
-           given={Josef},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{institution}{1}{%
-        {European Central Bank}%
-      }
-      \strng{namehash}{eccf4c5925b99b1131830650a372a444}
-      \strng{fullhash}{2ec2908baef0a884e28db45feb129a92}
-      \strng{bibnamehash}{2ec2908baef0a884e28db45feb129a92}
-      \strng{authorbibnamehash}{2ec2908baef0a884e28db45feb129a92}
-      \strng{authornamehash}{eccf4c5925b99b1131830650a372a444}
-      \strng{authorfullhash}{2ec2908baef0a884e28db45feb129a92}
-      \field{sortinit}{L}
-      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{number}{219}
-      \field{title}{Anticipating the Bust: A New Cyclical Systemic Risk Indicator}
-      \field{type}{ECB Occasional Paper}
-      \field{year}{2019}
-    \endentry
     \entry{lang2020machine}{article}{}
       \name{author}{2}{}{%
-        {{un=1,uniquepart=given,hash=d845d4144d8d16074da0dd22893b918f}{%
+        {{un=0,uniquepart=base,hash=d845d4144d8d16074da0dd22893b918f}{%
            family={Lang},
            familyi={L\bibinitperiod},
            given={Michael},
            giveni={M\bibinitperiod},
-           givenun=1}}%
+           givenun=0}}%
         {{un=0,uniquepart=base,hash=98a1c3e0b42aff26c7ba73d911b5454f}{%
            family={Forletta},
            familyi={F\bibinitperiod},
@@ -1033,6 +893,7 @@
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Economic Systems}
@@ -1114,69 +975,6 @@
       \field{year}{1998}
       \field{pages}{17\bibrangedash 29}
       \range{pages}{13}
-    \endentry
-    \entry{reimann2024machine}{article}{}
-      \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=74d398e84e3ce835707b81f9d3a148ef}{%
-           family={Reimann},
-           familyi={R\bibinitperiod},
-           given={Lea},
-           giveni={L\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{publisher}{1}{%
-        {Springer}%
-      }
-      \strng{namehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{fullhash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{bibnamehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{authorbibnamehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{authornamehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{authorfullhash}{74d398e84e3ce835707b81f9d3a148ef}
-      \field{sortinit}{R}
-      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Review of Evolutionary Political Economy}
-      \field{number}{1}
-      \field{title}{Machine Learning Methods for Crisis Prediction: A Comparative Analysis}
-      \field{volume}{5}
-      \field{year}{2024}
-      \field{pages}{89\bibrangedash 120}
-      \range{pages}{32}
-    \endentry
-    \entry{rey2015dilemma}{report}{}
-      \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=0831f012d6f4c95339341fe3ec7cc5ea}{%
-           family={Rey},
-           familyi={R\bibinitperiod},
-           given={Hélène},
-           giveni={H\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{institution}{1}{%
-        {National Bureau of Economic Research}%
-      }
-      \strng{namehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{fullhash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{bibnamehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{authorbibnamehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{authornamehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{authorfullhash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \field{sortinit}{R}
-      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{number}{21162}
-      \field{title}{Dilemma not Trilemma: The Global Financial Cycle and Monetary Policy Independence}
-      \field{type}{NBER Working Paper}
-      \field{year}{2015}
     \endentry
     \entry{talvi2013latin}{report}{}
       \name{author}{2}{}{%
@@ -1476,7 +1274,6 @@
       \strng{authorbibnamehash}{7a5b05e41200fe17fd2650275a7816d9}
       \strng{authornamehash}{b020e2f5c6641a66e44af0eca38a0d3a}
       \strng{authorfullhash}{7a5b05e41200fe17fd2650275a7816d9}
-      \field{extraname}{1}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{extradatescope}{labelyear}
@@ -1489,50 +1286,6 @@
       \field{title}{Sudden Stops, the Real Exchange Rate, and Fiscal Sustainability: Argentina's Lessons}
       \field{type}{IDB Working Paper}
       \field{year}{2003}
-    \endentry
-    \entry{calvo2006phoenix}{report}{}
-      \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=fc885233ab77bfb12503064c4e0094d0}{%
-           family={Calvo},
-           familyi={C\bibinitperiod},
-           given={Guillermo\bibnamedelima A.},
-           giveni={G\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=b898af9ebe428cfe95f330bdb3f41fa1}{%
-           family={Izquierdo},
-           familyi={I\bibinitperiod},
-           given={Alejandro},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e2a28ff477e5c1c41fde1fd0c7e46e4f}{%
-           family={Talvi},
-           familyi={T\bibinitperiod},
-           given={Ernesto},
-           giveni={E\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{institution}{1}{%
-        {National Bureau of Economic Research}%
-      }
-      \strng{namehash}{b020e2f5c6641a66e44af0eca38a0d3a}
-      \strng{fullhash}{7a5b05e41200fe17fd2650275a7816d9}
-      \strng{bibnamehash}{7a5b05e41200fe17fd2650275a7816d9}
-      \strng{authorbibnamehash}{7a5b05e41200fe17fd2650275a7816d9}
-      \strng{authornamehash}{b020e2f5c6641a66e44af0eca38a0d3a}
-      \strng{authorfullhash}{7a5b05e41200fe17fd2650275a7816d9}
-      \field{extraname}{2}
-      \field{sortinit}{C}
-      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{note}{Also BIS Working Paper 221}
-      \field{number}{12101}
-      \field{title}{Phoenix Miracles in Emerging Markets: Recovering without Credit from Systemic Financial Crises}
-      \field{type}{NBER Working Paper}
-      \field{year}{2006}
     \endentry
     \entry{calvo2005sudden}{report}{}
       \name{author}{2}{}{%
@@ -1605,8 +1358,8 @@
     \endentry
     \entry{catao2014external}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=933a73ce29418c18bde86ef7251d8e52}{%
-           family={Cataõ},
+        {{un=0,uniquepart=base,hash=d16b37d966a2d383aeb5f76ef2ab1402}{%
+           family={Catão},
            familyi={C\bibinitperiod},
            given={Luis\bibnamedelimb A.\bibnamedelimi V.},
            giveni={L\bibinitperiod\bibinitdelim A\bibinitperiod\bibinitdelim V\bibinitperiod},
@@ -1618,15 +1371,12 @@
            giveni={G\bibinitperiod\bibinitdelim M\bibinitperiod},
            givenun=0}}%
       }
-      \list{publisher}{1}{%
-        {Palgrave Macmillan}%
-      }
-      \strng{namehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{fullhash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{bibnamehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{authorbibnamehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{authornamehash}{d98bd521fcca8d085639f3145589f7df}
-      \strng{authorfullhash}{d98bd521fcca8d085639f3145589f7df}
+      \strng{namehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{fullhash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{bibnamehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{authorbibnamehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{authornamehash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
+      \strng{authorfullhash}{e6a4762f4f66f4ba8ba9cc8a1dac0699}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{extradatescope}{labelyear}
@@ -1634,22 +1384,25 @@
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{IMF Economic Review}
+      \field{journaltitle}{Journal of International Economics}
       \field{number}{1}
-      \field{title}{External Financing and Exchange Rate Flexibility}
-      \field{volume}{62}
+      \field{title}{External Liabilities and Crises}
+      \field{volume}{94}
       \field{year}{2014}
-      \field{pages}{4\bibrangedash 23}
-      \range{pages}{20}
+      \field{pages}{18\bibrangedash 32}
+      \range{pages}{15}
+      \verb{doi}
+      \verb 10.1016/j.jinteco.2014.05.003
+      \endverb
     \endentry
     \entry{cavallo2023external}{report}{}
       \name{author}{3}{}{%
-        {{un=1,uniquepart=given,hash=3ea72a10e4df0fefcfc2a50adc0568e7}{%
+        {{un=0,uniquepart=base,hash=3ea72a10e4df0fefcfc2a50adc0568e7}{%
            family={Cavallo},
            familyi={C\bibinitperiod},
            given={Eduardo},
            giveni={E\bibinitperiod},
-           givenun=1}}%
+           givenun=0}}%
         {{un=0,uniquepart=base,hash=8f947856c015647804277ded7bde32db}{%
            family={Fernández-Arias},
            familyi={F\bibinithyphendelim A\bibinitperiod},
@@ -1676,50 +1429,13 @@
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{month}{7}
       \field{title}{External Crisis Vulnerability in Latin America and the Caribbean}
       \field{type}{IDB Working Paper}
       \field{year}{2023}
-    \endentry
-    \entry{cavallo2008openness}{article}{}
-      \name{author}{2}{}{%
-        {{un=1,uniquepart=given,hash=3dd0d214b57cc68acaa699d044aad312}{%
-           family={Cavallo},
-           familyi={C\bibinitperiod},
-           given={Eduardo\bibnamedelima A.},
-           giveni={E\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=1}}%
-        {{un=0,uniquepart=base,hash=e0ead265ac131508a578e99e580133e3}{%
-           family={Frankel},
-           familyi={F\bibinitperiod},
-           given={Jeffrey\bibnamedelima A.},
-           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{publisher}{1}{%
-        {Elsevier}%
-      }
-      \strng{namehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{fullhash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{bibnamehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{authorbibnamehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{authornamehash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \strng{authorfullhash}{27898f5ec4cd99ea08c55e6ddc3bdeb5}
-      \field{sortinit}{C}
-      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Journal of International Money and Finance}
-      \field{number}{8}
-      \field{title}{Does Openness to Trade Make Countries More Vulnerable to Sudden Stops, or Less? Using Gravity to Establish Causality}
-      \field{volume}{27}
-      \field{year}{2008}
-      \field{pages}{1430\bibrangedash 1452}
-      \range{pages}{23}
     \endentry
     \entry{demello2010bank}{article}{}
       \name{author}{2}{}{%
@@ -1906,10 +1622,37 @@
       \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
+      \field{month}{3}
       \field{number}{1426}
-      \field{title}{{CISS} - A Composite Indicator of Systemic Stress in the Financial System}
+      \field{title}{{CISS}---A Composite Indicator of Systemic Stress in the Financial System}
       \field{type}{ECB Working Paper}
       \field{year}{2012}
+    \endentry
+    \entry{imf2010ews}{report}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=ebb24d27be637c70ebf0c297ab842b7f}{%
+           family={{International Monetary Fund}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {International Monetary Fund}%
+      }
+      \strng{namehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{fullhash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{bibnamehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{authorbibnamehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{authornamehash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \strng{authorfullhash}{ebb24d27be637c70ebf0c297ab842b7f}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{IMF-FSB} Early Warning Exercise: Design and Methodological Toolkit}
+      \field{type}{Report}
+      \field{year}{2010}
     \endentry
     \entry{izquierdo2008booms}{report}{}
       \name{author}{3}{}{%
@@ -1989,44 +1732,6 @@
       \field{number}{20}
       \field{title}{Currency Crises: A Perspective on Recent Theoretical Developments}
       \field{year}{2000}
-    \endentry
-    \entry{jin2016global}{article}{}
-      \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=d176fa8dfd19392a3296af9f900ff3e8}{%
-           family={Jin},
-           familyi={J\bibinitperiod},
-           given={Xiaoye},
-           giveni={X\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=ede689c0e36e752505101b661c5ca9b2}{%
-           family={An},
-           familyi={A\bibinitperiod},
-           given={Xingye},
-           giveni={X\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{publisher}{1}{%
-        {Elsevier}%
-      }
-      \strng{namehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{fullhash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{bibnamehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{authorbibnamehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{authornamehash}{3361f5a25884cb3354224bbeeb6cce45}
-      \strng{authorfullhash}{3361f5a25884cb3354224bbeeb6cce45}
-      \field{sortinit}{J}
-      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Research in International Business and Finance}
-      \field{title}{Global Financial Crisis and Emerging Stock Market Contagion: A Volatility Impulse Response Function Approach}
-      \field{volume}{36}
-      \field{year}{2016}
-      \field{pages}{179\bibrangedash 195}
-      \range{pages}{17}
     \endentry
     \entry{kaminsky1998leading}{article}{}
       \name{author}{3}{}{%
@@ -2155,61 +1860,14 @@
       \field{pages}{92\bibrangedash 106}
       \range{pages}{15}
     \endentry
-    \entry{lang2019anticipating}{report}{}
-      \name{author}{4}{}{%
-        {{un=1,uniquepart=given,hash=148e008f1d7769824366b05ab4c53baf}{%
-           family={Lang},
-           familyi={L\bibinitperiod},
-           given={Jan\bibnamedelima Hannes},
-           giveni={J\bibinitperiod\bibinitdelim H\bibinitperiod},
-           givenun=1}}%
-        {{un=0,uniquepart=base,hash=282e08e2b7cf57db5499cc171f8dff38}{%
-           family={Izzo},
-           familyi={I\bibinitperiod},
-           given={Cosimo},
-           giveni={C\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e1a04c36709ade38c1412db11ff86644}{%
-           family={Fahr},
-           familyi={F\bibinitperiod},
-           given={Stephan},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=f65e7ddf49c8a9eed76f57714e21f09a}{%
-           family={Ruzicka},
-           familyi={R\bibinitperiod},
-           given={Josef},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{institution}{1}{%
-        {European Central Bank}%
-      }
-      \strng{namehash}{eccf4c5925b99b1131830650a372a444}
-      \strng{fullhash}{2ec2908baef0a884e28db45feb129a92}
-      \strng{bibnamehash}{2ec2908baef0a884e28db45feb129a92}
-      \strng{authorbibnamehash}{2ec2908baef0a884e28db45feb129a92}
-      \strng{authornamehash}{eccf4c5925b99b1131830650a372a444}
-      \strng{authorfullhash}{2ec2908baef0a884e28db45feb129a92}
-      \field{sortinit}{L}
-      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{number}{219}
-      \field{title}{Anticipating the Bust: A New Cyclical Systemic Risk Indicator}
-      \field{type}{ECB Occasional Paper}
-      \field{year}{2019}
-    \endentry
     \entry{lang2020machine}{article}{}
       \name{author}{2}{}{%
-        {{un=1,uniquepart=given,hash=d845d4144d8d16074da0dd22893b918f}{%
+        {{un=0,uniquepart=base,hash=d845d4144d8d16074da0dd22893b918f}{%
            family={Lang},
            familyi={L\bibinitperiod},
            given={Michael},
            giveni={M\bibinitperiod},
-           givenun=1}}%
+           givenun=0}}%
         {{un=0,uniquepart=base,hash=98a1c3e0b42aff26c7ba73d911b5454f}{%
            family={Forletta},
            familyi={F\bibinitperiod},
@@ -2230,6 +1888,7 @@
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Economic Systems}
@@ -2312,69 +1971,6 @@
       \field{pages}{17\bibrangedash 29}
       \range{pages}{13}
     \endentry
-    \entry{reimann2024machine}{article}{}
-      \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=74d398e84e3ce835707b81f9d3a148ef}{%
-           family={Reimann},
-           familyi={R\bibinitperiod},
-           given={Lea},
-           giveni={L\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{publisher}{1}{%
-        {Springer}%
-      }
-      \strng{namehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{fullhash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{bibnamehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{authorbibnamehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{authornamehash}{74d398e84e3ce835707b81f9d3a148ef}
-      \strng{authorfullhash}{74d398e84e3ce835707b81f9d3a148ef}
-      \field{sortinit}{R}
-      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Review of Evolutionary Political Economy}
-      \field{number}{1}
-      \field{title}{Machine Learning Methods for Crisis Prediction: A Comparative Analysis}
-      \field{volume}{5}
-      \field{year}{2024}
-      \field{pages}{89\bibrangedash 120}
-      \range{pages}{32}
-    \endentry
-    \entry{rey2015dilemma}{report}{}
-      \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=0831f012d6f4c95339341fe3ec7cc5ea}{%
-           family={Rey},
-           familyi={R\bibinitperiod},
-           given={Hélène},
-           giveni={H\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{institution}{1}{%
-        {National Bureau of Economic Research}%
-      }
-      \strng{namehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{fullhash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{bibnamehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{authorbibnamehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{authornamehash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \strng{authorfullhash}{0831f012d6f4c95339341fe3ec7cc5ea}
-      \field{sortinit}{R}
-      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \true{uniqueprimaryauthor}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{number}{21162}
-      \field{title}{Dilemma not Trilemma: The Global Financial Cycle and Monetary Policy Independence}
-      \field{type}{NBER Working Paper}
-      \field{year}{2015}
-    \endentry
     \entry{talvi2013latin}{report}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=e2a28ff477e5c1c41fde1fd0c7e46e4f}{%
@@ -2412,11 +2008,7 @@
       \field{year}{2013}
     \endentry
   \enddatalist
-  \missing{imf2010earlywarning}
   \missing{juselius2006cointegrated}
-  \missing{martinez2002predicting}
-  \missing{plail2015quest}
-  \missing{powell2012world}
 \endrefsection
 \endinput
 
